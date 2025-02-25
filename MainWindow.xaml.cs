@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ServiceWPF.Pages;
 
 namespace ServiceWPF
 {
@@ -24,6 +25,9 @@ namespace ServiceWPF
         {
             InitializeComponent();
             ConfigureForRole(userRole);
+            
+            // Загружаем начальную страницу
+            MainFrame.Navigate(new MyRequestsPage());
         }
 
         private void ConfigureForRole(string role)
@@ -46,7 +50,24 @@ namespace ServiceWPF
         private void ConfigureForUser()
         {
             // Базовая конфигурация для пользователя
-            // Пока оставим текущие пункты меню
+            MenuPanel.Children.Clear();
+            
+            var myRequestsButton = new RadioButton 
+            { 
+                Content = "Мои заявки",
+                Style = FindResource("MenuButtonStyle") as Style,
+                IsChecked = true
+            };
+            myRequestsButton.Checked += MenuButton_Checked;
+            MenuPanel.Children.Add(myRequestsButton);
+
+            var createRequestButton = new RadioButton 
+            { 
+                Content = "Создать заявку",
+                Style = FindResource("MenuButtonStyle") as Style
+            };
+            createRequestButton.Checked += MenuButton_Checked;
+            MenuPanel.Children.Add(createRequestButton);
         }
 
         private void ConfigureForExecutor()
@@ -107,7 +128,16 @@ namespace ServiceWPF
             if (sender is RadioButton button)
             {
                 CurrentPageTitle.Text = button.Content.ToString();
-                // Здесь будет логика навигации
+                
+                switch (button.Content.ToString())
+                {
+                    case "Мои заявки":
+                        MainFrame.Navigate(new MyRequestsPage());
+                        break;
+                    case "Создать заявку":
+                        // Здесь будет навигация на страницу создания заявки
+                        break;
+                }
             }
         }
 

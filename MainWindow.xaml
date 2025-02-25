@@ -87,15 +87,7 @@
                         BorderThickness="0,0,1,0" 
                         BorderBrush="#EEEEEE">
                     <StackPanel x:Name="MenuPanel" Margin="0,20">
-                        <!-- Пункты меню будут разными для каждой роли -->
-                        <RadioButton Content="Мои заявки"
-                                   Style="{StaticResource MenuButtonStyle}"
-                                   IsChecked="True"
-                                   Checked="MenuButton_Checked"/>
-                        <RadioButton Content="Создать заявку"
-                                   Style="{StaticResource MenuButtonStyle}"
-                                   Checked="MenuButton_Checked"/>
-                        <!-- Дополнительные пункты меню будут добавлены в зависимости от роли -->
+                        <!-- Пункты меню будут добавляться программно -->
                     </StackPanel>
                 </Border>
 
