@@ -140,7 +140,7 @@ namespace ServiceWPF
                         MainFrame.Navigate(new AvailableRequestsPage());
                         break;
                     case "Мои заявки в работе":
-                        // Здесь будет навигация на страницу заявок в работе
+                        MainFrame.Navigate(new ActiveRequestsPage());
                         break;
                 }
             }
