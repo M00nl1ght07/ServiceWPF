@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ServiceWPF; // Добавляем для NotificationManager
 
 namespace ServiceWPF
 {
@@ -112,7 +113,7 @@ namespace ServiceWPF
                 if (result == MessageBoxResult.Yes)
                 {
                     // Временно, пока нет БД
-                    MessageBox.Show("Заявка отменена", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    NotificationManager.Show("Заявка отменена", NotificationType.Success);
                     LoadAllRequests(); // Перезагружаем список
                 }
             }

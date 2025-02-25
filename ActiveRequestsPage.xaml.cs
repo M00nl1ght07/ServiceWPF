@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ServiceWPF; // Добавляем для NotificationManager
 
 namespace ServiceWPF
 {
@@ -88,7 +89,7 @@ namespace ServiceWPF
             {
                 var newStatus = (comboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
                 // Временно, пока нет БД
-                MessageBox.Show($"Статус заявки изменен на: {newStatus}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                NotificationManager.Show($"Статус заявки изменен на: {newStatus}", NotificationType.Success);
             }
         }
     }

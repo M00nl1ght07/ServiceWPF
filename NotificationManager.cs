@@ -178,13 +178,13 @@ namespace ServiceWPF
 
 
 
-                // Скрываем через 3 секунды
+                // Увеличиваем задержку до 5 секунд
 
                 var timer = new System.Windows.Threading.DispatcherTimer
 
                 {
 
-                    Interval = TimeSpan.FromSeconds(3)
+                    Interval = TimeSpan.FromSeconds(5)
 
                 };
 
@@ -194,6 +194,8 @@ namespace ServiceWPF
 
                 {
 
+                    // Увеличиваем время анимации исчезновения
+
                     var fadeOut = new DoubleAnimation
 
                     {
@@ -202,7 +204,7 @@ namespace ServiceWPF
 
                         To = 0,
 
-                        Duration = TimeSpan.FromSeconds(0.3),
+                        Duration = TimeSpan.FromSeconds(0.5), // Увеличили время анимации
 
                         EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
 
