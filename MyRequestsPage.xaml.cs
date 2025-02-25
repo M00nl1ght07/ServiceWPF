@@ -97,5 +97,14 @@ namespace ServiceWPF
         {
             // Здесь будет логика сортировки
         }
+
+        private void RequestsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (RequestsList.SelectedItem != null)
+            {
+                NavigationService?.Navigate(new RequestDetailsPage());
+                RequestsList.SelectedItem = null;
+            }
+        }
     }
 }

@@ -83,7 +83,8 @@
                           BorderThickness="0"
                           Background="White"
                           ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          SelectionChanged="RequestsList_SelectionChanged">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel/>

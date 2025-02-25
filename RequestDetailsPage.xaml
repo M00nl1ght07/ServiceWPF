@@ -1,0 +1,163 @@
+﻿<Page x:Class="ServiceWPF.RequestDetailsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Детали заявки"
+      Background="White">
+
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- Кнопка назад -->
+        <Button Content="← Назад"
+                Height="35"
+                Padding="15,0"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,20"
+                Background="Transparent"
+                Foreground="#2196F3"
+                BorderThickness="0"
+                Click="BackButton_Click"
+                Cursor="Hand"/>
+
+        <!-- Шапка с основной информацией -->
+        <StackPanel Grid.Row="1">
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Заголовок и статус -->
+                <StackPanel>
+                    <TextBlock x:Name="TitleBlock"
+                             Text="Не работает принтер"
+                             FontSize="24"
+                             FontWeight="Medium"/>
+                    <StackPanel Orientation="Horizontal"
+                              Margin="0,10,0,0">
+                        <TextBlock Text="Создана: "
+                                 Foreground="#757575"/>
+                        <TextBlock x:Name="CreatedDateBlock"
+                                 Text="15.03.2024"
+                                 Foreground="#757575"/>
+                        <TextBlock Text=" • "
+                                 Foreground="#757575"
+                                 Margin="5,0"/>
+                        <TextBlock x:Name="StatusBlock"
+                                 Text="В работе"
+                                 Foreground="#2196F3"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Приоритет -->
+                <Border Grid.Column="1"
+                        Background="#FFF3E0"
+                        Padding="12,6"
+                        CornerRadius="4">
+                    <TextBlock x:Name="PriorityBlock"
+                             Text="Высокий"
+                             Foreground="#F57C00"/>
+                </Border>
+            </Grid>
+
+            <!-- Описание -->
+            <TextBlock Text="Описание"
+                     FontSize="16"
+                     FontWeight="Medium"
+                     Margin="0,0,0,10"/>
+            <TextBlock x:Name="DescriptionBlock"
+                     Text="Принтер HP в кабинете 405 не печатает документы. При отправке на печать появляется ошибка."
+                     TextWrapping="Wrap"
+                     Foreground="#757575"
+                     Margin="0,0,0,30"/>
+        </StackPanel>
+
+        <!-- История и комментарии -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- История изменений -->
+            <StackPanel Margin="0,0,20,0">
+                <TextBlock Text="История изменений"
+                         FontSize="16"
+                         FontWeight="Medium"
+                         Margin="0,0,0,15"/>
+                <ItemsControl x:Name="HistoryList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,1"
+                                    BorderBrush="#E0E0E0"
+                                    Padding="0,10">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Status}"
+                                             Foreground="#2196F3"/>
+                                    <TextBlock Text="{Binding Date}"
+                                             Foreground="#757575"
+                                             Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- Комментарии -->
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="Комментарии"
+                         FontSize="16"
+                         FontWeight="Medium"
+                         Margin="0,0,0,15"/>
+
+                <!-- Список комментариев -->
+                <ItemsControl x:Name="CommentsList"
+                            Margin="0,0,0,20">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,1"
+                                    BorderBrush="#E0E0E0"
+                                    Padding="0,15">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Author}"
+                                             FontWeight="Medium"/>
+                                    <TextBlock Text="{Binding Text}"
+                                             TextWrapping="Wrap"
+                                             Margin="0,5"/>
+                                    <TextBlock Text="{Binding Date}"
+                                             Foreground="#757575"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Добавление комментария -->
+                <Border Background="White"
+                        BorderThickness="1"
+                        BorderBrush="#E0E0E0"
+                        CornerRadius="4">
+                    <TextBox x:Name="CommentBox"
+                            BorderThickness="0"
+                            Padding="12"
+                            Background="Transparent"
+                            TextWrapping="Wrap"
+                            AcceptsReturn="True"
+                            Height="80"
+                            VerticalScrollBarVisibility="Auto"/>
+                </Border>
+                <Button Content="Добавить комментарий"
+                        Height="35"
+                        Width="200"
+                        HorizontalAlignment="Right"
+                        Margin="0,10,0,0"
+                        Click="AddComment_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

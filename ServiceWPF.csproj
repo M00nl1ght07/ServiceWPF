@@ -55,6 +55,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="RequestDetailsPage.xaml.cs">
+      <DependentUpon>RequestDetailsPage.xaml</DependentUpon>
+    </Compile>
     <Page Include="CreateRequestPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -86,6 +89,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="MyRequestsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RequestDetailsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
