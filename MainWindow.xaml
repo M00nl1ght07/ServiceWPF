@@ -5,8 +5,108 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ServiceWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Service Desk" Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="White"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="CanResize">
+    <Border Background="White" BorderThickness="1" BorderBrush="#EEEEEE">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <!-- Верхняя панель -->
+            <Grid Background="#2196F3" MouseDown="Grid_MouseDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Логотип и название -->
+                <StackPanel Orientation="Horizontal" 
+                           Margin="20,0,0,0" 
+                           VerticalAlignment="Center">
+                    <Image Source="/images/logo.png" 
+                           Height="40" 
+                           Width="40"/>
+                    <TextBlock Text="Service Desk"
+                             Foreground="White"
+                             FontSize="22"
+                             FontWeight="Medium"
+                             Margin="15,0,0,0"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Заголовок текущего раздела -->
+                <TextBlock Grid.Column="1"
+                         x:Name="CurrentPageTitle"
+                         Text="Мои заявки"
+                         Foreground="White"
+                         FontSize="20"
+                         VerticalAlignment="Center"
+                         Margin="20,0"/>
+
+                <!-- Профиль и выход -->
+                <StackPanel Grid.Column="2" 
+                          Orientation="Horizontal" 
+                          Margin="20,0">
+                    <TextBlock x:Name="UserNameText"
+                             Text="Иван Иванов"
+                             Foreground="White"
+                             FontSize="16"
+                             VerticalAlignment="Center"
+                             Margin="0,0,20,0"/>
+                    <Button Content="Выход"
+                            Width="100"
+                            Height="35"
+                            Style="{StaticResource ExitButtonStyle}"
+                            Click="LogoutButton_Click"/>
+                </StackPanel>
+
+                <!-- Кнопка закрытия -->
+                <Button Grid.Column="3"
+                        Style="{StaticResource CloseButtonStyle}"
+                        Margin="20,0"
+                        Click="CloseButton_Click"/>
+            </Grid>
+
+            <!-- Основной контент -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Боковое меню -->
+                <Border Background="#F5F5F5" 
+                        BorderThickness="0,0,1,0" 
+                        BorderBrush="#EEEEEE">
+                    <StackPanel x:Name="MenuPanel" Margin="0,20">
+                        <!-- Пункты меню будут разными для каждой роли -->
+                        <RadioButton Content="Мои заявки"
+                                   Style="{StaticResource MenuButtonStyle}"
+                                   IsChecked="True"
+                                   Checked="MenuButton_Checked"/>
+                        <RadioButton Content="Создать заявку"
+                                   Style="{StaticResource MenuButtonStyle}"
+                                   Checked="MenuButton_Checked"/>
+                        <!-- Дополнительные пункты меню будут добавлены в зависимости от роли -->
+                    </StackPanel>
+                </Border>
+
+                <!-- Область контента -->
+                <Border Grid.Column="1" 
+                        Background="White" 
+                        Margin="20">
+                    <Frame x:Name="MainFrame" 
+                           NavigationUIVisibility="Hidden"/>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>

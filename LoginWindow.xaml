@@ -8,24 +8,9 @@
         AllowsTransparency="True"
         ResizeMode="NoResize">
     <Window.Resources>
+        <!-- Найдите и удалите этот блок, если он есть -->
         <Style x:Key="CloseButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#FF4081"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Width" Value="30"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="15">
-                            <TextBlock Text="✕" 
-                                     FontSize="16" 
-                                     HorizontalAlignment="Center" 
-                                     VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <!-- Удалить весь стиль -->
         </Style>
     </Window.Resources>
     

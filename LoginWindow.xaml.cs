@@ -90,7 +90,9 @@ namespace ServiceWPF
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            // Здесь будет логика входа
+            // Временно, пока нет БД
+            new MainWindow("user").Show();
+            this.Close();
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
