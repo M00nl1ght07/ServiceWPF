@@ -91,8 +91,16 @@ namespace ServiceWPF
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             // Временно, пока нет БД
-            new MainWindow("user").Show();
-            this.Close();
+            if (UsernameTextBox.Text == "master")
+            {
+                new MainWindow("executor").Show();
+                this.Close();
+            }
+            else
+            {
+                new MainWindow("user").Show();
+                this.Close();
+            }
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)

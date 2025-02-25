@@ -23,3 +23,5 @@ C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF.exe
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF.pdb
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\RequestDetailsPage.baml
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\RequestDetailsPage.g.cs
+C:\Users\igris\source\repos\ServiceWPF\obj\Debug\AvailableRequestsPage.baml
+C:\Users\igris\source\repos\ServiceWPF\obj\Debug\AvailableRequestsPage.g.cs

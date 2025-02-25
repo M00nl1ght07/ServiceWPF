@@ -55,9 +55,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AvailableRequestsPage.xaml.cs">
+      <DependentUpon>AvailableRequestsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RequestDetailsPage.xaml.cs">
       <DependentUpon>RequestDetailsPage.xaml</DependentUpon>
     </Compile>
+    <Page Include="AvailableRequestsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CreateRequestPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

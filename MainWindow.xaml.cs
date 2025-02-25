@@ -136,6 +136,12 @@ namespace ServiceWPF
                     case "Создать заявку":
                         MainFrame.Navigate(new CreateRequestPage());
                         break;
+                    case "Доступные заявки":
+                        MainFrame.Navigate(new AvailableRequestsPage());
+                        break;
+                    case "Мои заявки в работе":
+                        // Здесь будет навигация на страницу заявок в работе
+                        break;
                 }
             }
         }
