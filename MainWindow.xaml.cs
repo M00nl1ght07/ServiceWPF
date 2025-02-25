@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ServiceWPF.Pages;
 
 namespace ServiceWPF
 {
@@ -135,7 +134,7 @@ namespace ServiceWPF
                         MainFrame.Navigate(new MyRequestsPage());
                         break;
                     case "Создать заявку":
-                        // Здесь будет навигация на страницу создания заявки
+                        MainFrame.Navigate(new CreateRequestPage());
                         break;
                 }
             }

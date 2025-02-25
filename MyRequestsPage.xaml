@@ -1,4 +1,4 @@
-﻿<Page x:Class="ServiceWPF.Pages.MyRequestsPage"
+﻿<Page x:Class="ServiceWPF.MyRequestsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Мои заявки"

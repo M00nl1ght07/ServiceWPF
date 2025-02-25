@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace ServiceWPF.Pages
+namespace ServiceWPF
 {
     public partial class MyRequestsPage : Page
     {
