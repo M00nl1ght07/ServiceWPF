@@ -142,6 +142,15 @@ namespace ServiceWPF
                     case "Мои заявки в работе":
                         MainFrame.Navigate(new ActiveRequestsPage());
                         break;
+                    case "Все заявки":
+                        MainFrame.Navigate(new AllRequestsPage());
+                        break;
+                    case "Пользователи":
+                        MainFrame.Navigate(new UsersPage());
+                        break;
+                    case "Статистика":
+                        MainFrame.Navigate(new StatisticsPage());
+                        break;
                 }
             }
         }

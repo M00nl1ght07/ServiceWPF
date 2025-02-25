@@ -58,13 +58,26 @@
     <Compile Include="ActiveRequestsPage.xaml.cs">
       <DependentUpon>ActiveRequestsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AllRequestsPage.xaml.cs">
+      <DependentUpon>AllRequestsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AvailableRequestsPage.xaml.cs">
       <DependentUpon>AvailableRequestsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="RequestDetailsPage.xaml.cs">
       <DependentUpon>RequestDetailsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StatisticsPage.xaml.cs">
+      <DependentUpon>StatisticsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UsersPage.xaml.cs">
+      <DependentUpon>UsersPage.xaml</DependentUpon>
+    </Compile>
     <Page Include="ActiveRequestsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AllRequestsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -107,6 +120,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="RequestDetailsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StatisticsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UsersPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

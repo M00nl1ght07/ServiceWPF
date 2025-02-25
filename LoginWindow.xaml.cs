@@ -91,15 +91,20 @@ namespace ServiceWPF
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             // Временно, пока нет БД
-            if (UsernameTextBox.Text == "master")
+            switch (UsernameTextBox.Text.ToLower())
             {
-                new MainWindow("executor").Show();
-                this.Close();
-            }
-            else
-            {
-                new MainWindow("user").Show();
-                this.Close();
+                case "master":
+                    new MainWindow("executor").Show();
+                    this.Close();
+                    break;
+                case "admin":
+                    new MainWindow("admin").Show();
+                    this.Close();
+                    break;
+                default:
+                    new MainWindow("user").Show();
+                    this.Close();
+                    break;
             }
         }
 

@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\igris\source\repos\ServiceWPF\App.xaml
-8-134495336
+11470796833
 
-11-1762560978
+141937972005
 13-1310406943
-ActiveRequestsPage.xaml;AvailableRequestsPage.xaml;CreateRequestPage.xaml;LoginWindow.xaml;MainStyle.xaml;MainWindow.xaml;MyRequestsPage.xaml;RequestDetailsPage.xaml;
+ActiveRequestsPage.xaml;AllRequestsPage.xaml;AvailableRequestsPage.xaml;CreateRequestPage.xaml;LoginWindow.xaml;MainStyle.xaml;MainWindow.xaml;MyRequestsPage.xaml;RequestDetailsPage.xaml;StatisticsPage.xaml;UsersPage.xaml;
 
 False
 

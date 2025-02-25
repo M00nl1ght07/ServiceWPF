@@ -1,0 +1,122 @@
+﻿<Page x:Class="ServiceWPF.StatisticsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Статистика"
+      Background="White">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0">
+            <!-- Общая статистика -->
+            <TextBlock Text="Общая статистика"
+                     FontSize="20"
+                     FontWeight="Medium"
+                     Margin="0,0,0,20"/>
+
+            <Grid Margin="0,0,0,30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Всего заявок -->
+                <Border Background="#E3F2FD"
+                        Padding="20"
+                        Margin="0,0,10,0"
+                        CornerRadius="4">
+                    <StackPanel>
+                        <TextBlock Text="Всего заявок"
+                                 FontSize="14"
+                                 Foreground="#1976D2"/>
+                        <TextBlock x:Name="TotalRequestsBlock"
+                                 Text="156"
+                                 FontSize="24"
+                                 FontWeight="Medium"
+                                 Foreground="#1976D2"
+                                 Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Заявок в работе -->
+                <Border Grid.Column="1"
+                        Background="#FFF3E0"
+                        Padding="20"
+                        Margin="10,0"
+                        CornerRadius="4">
+                    <StackPanel>
+                        <TextBlock Text="В работе"
+                                 FontSize="14"
+                                 Foreground="#F57C00"/>
+                        <TextBlock x:Name="ActiveRequestsBlock"
+                                 Text="23"
+                                 FontSize="24"
+                                 FontWeight="Medium"
+                                 Foreground="#F57C00"
+                                 Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Выполнено за месяц -->
+                <Border Grid.Column="2"
+                        Background="#E8F5E9"
+                        Padding="20"
+                        Margin="0,0,0,0"
+                        CornerRadius="4">
+                    <StackPanel>
+                        <TextBlock Text="Выполнено за месяц"
+                                 FontSize="14"
+                                 Foreground="#388E3C"/>
+                        <TextBlock x:Name="CompletedRequestsBlock"
+                                 Text="48"
+                                 FontSize="24"
+                                 FontWeight="Medium"
+                                 Foreground="#388E3C"
+                                 Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Статистика по исполнителям -->
+            <TextBlock Text="Статистика по исполнителям"
+                     FontSize="20"
+                     FontWeight="Medium"
+                     Margin="0,0,0,20"/>
+
+            <Border BorderThickness="1"
+                    BorderBrush="#E0E0E0"
+                    Background="White"
+                    CornerRadius="4">
+                <ListView x:Name="ExecutorsList"
+                         BorderThickness="0"
+                         Background="Transparent">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="15"
+                                    Background="Transparent"
+                                    BorderThickness="0,0,0,1"
+                                    BorderBrush="#E0E0E0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{Binding Name}"
+                                             FontSize="16"/>
+                                    <TextBlock Grid.Column="1"
+                                             Text="{Binding ActiveRequests}"
+                                             Foreground="#F57C00"
+                                             Margin="20,0"/>
+                                    <TextBlock Grid.Column="2"
+                                             Text="{Binding CompletedRequests}"
+                                             Foreground="#388E3C"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
