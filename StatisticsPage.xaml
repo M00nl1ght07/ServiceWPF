@@ -76,6 +76,63 @@
                 </Border>
             </Grid>
 
+            <!-- Среднее время выполнения -->
+            <TextBlock Text="Среднее время выполнения"
+                     FontSize="20"
+                     FontWeight="Medium"
+                     Margin="0,30,0,20"/>
+
+            <Border Background="#FAFAFA"
+                    BorderThickness="1"
+                    BorderBrush="#E0E0E0"
+                    CornerRadius="4"
+                    Padding="20"
+                    Margin="0,0,0,30">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Низкий приоритет -->
+                    <StackPanel>
+                        <TextBlock Text="Низкий приоритет"
+                                 FontSize="14"
+                                 Foreground="#757575"/>
+                        <TextBlock x:Name="LowPriorityTimeBlock"
+                                 Text="2 дня 4 часа"
+                                 FontSize="20"
+                                 FontWeight="Medium"
+                                 Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Средний приоритет -->
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Средний приоритет"
+                                 FontSize="14"
+                                 Foreground="#757575"/>
+                        <TextBlock x:Name="MediumPriorityTimeBlock"
+                                 Text="1 день 6 часов"
+                                 FontSize="20"
+                                 FontWeight="Medium"
+                                 Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Высокий приоритет -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Высокий приоритет"
+                                 FontSize="14"
+                                 Foreground="#757575"/>
+                        <TextBlock x:Name="HighPriorityTimeBlock"
+                                 Text="12 часов"
+                                 FontSize="20"
+                                 FontWeight="Medium"
+                                 Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
             <!-- Статистика по исполнителям -->
             <TextBlock Text="Статистика по исполнителям"
                      FontSize="20"
@@ -88,14 +145,16 @@
                     CornerRadius="4">
                 <ListView x:Name="ExecutorsList"
                          BorderThickness="0"
-                         Background="Transparent">
+                         Background="Transparent"
+                         HorizontalContentAlignment="Stretch">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Border Padding="15"
                                     Background="Transparent"
                                     BorderThickness="0,0,0,1"
-                                    BorderBrush="#E0E0E0">
-                                <Grid>
+                                    BorderBrush="#E0E0E0"
+                                    HorizontalAlignment="Stretch">
+                                <Grid HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>

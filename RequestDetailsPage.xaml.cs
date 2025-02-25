@@ -35,6 +35,7 @@ namespace ServiceWPF
             CreatedDateBlock.Text = "15.03.2024";
             StatusBlock.Text = "В работе";
             PriorityBlock.Text = "Высокий";
+            ExecutorBlock.Text = "Иванов И.И.";
             DescriptionBlock.Text = "Принтер HP в кабинете 405 не печатает документы. При отправке на печать появляется ошибка.";
         }
 
@@ -75,12 +76,12 @@ namespace ServiceWPF
         {
             if (string.IsNullOrWhiteSpace(CommentBox.Text))
             {
-                MessageBox.Show("Введите текст комментария", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                NotificationManager.Show("Введите текст комментария", NotificationType.Warning);
                 return;
             }
 
             // Временно, пока нет БД
-            MessageBox.Show("Комментарий добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            NotificationManager.Show("Комментарий добавлен!", NotificationType.Success);
             CommentBox.Clear();
         }
 

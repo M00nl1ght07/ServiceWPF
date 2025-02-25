@@ -69,9 +69,8 @@ namespace ServiceWPF
         {
             if (sender is Button button && button.Tag != null)
             {
-                // Временно, пока нет БД
-                MessageBox.Show("Заявка взята в работу!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                LoadAvailableRequests(); // Перезагружаем список
+                NotificationManager.Show("Заявка взята в работу!", NotificationType.Success);
+                LoadAvailableRequests();
             }
         }
     }

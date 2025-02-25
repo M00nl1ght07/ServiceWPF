@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ServiceWPF;
 
 namespace ServiceWPF
 {
@@ -23,6 +24,7 @@ namespace ServiceWPF
         public MainWindow(string userRole = "user") // временно, пока нет БД
         {
             InitializeComponent();
+            NotificationManager.Initialize(this);
             ConfigureForRole(userRole);
             
             // Загружаем начальную страницу

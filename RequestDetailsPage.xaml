@@ -50,6 +50,14 @@
                         <TextBlock x:Name="StatusBlock"
                                  Text="В работе"
                                  Foreground="#2196F3"/>
+                        <TextBlock Text=" • "
+                                 Foreground="#757575"
+                                 Margin="5,0"/>
+                        <TextBlock Text="Исполнитель: "
+                                 Foreground="#757575"/>
+                        <TextBlock x:Name="ExecutorBlock"
+                                 Text="Не назначен"
+                                 Foreground="#2196F3"/>
                     </StackPanel>
                 </StackPanel>
 

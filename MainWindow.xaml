@@ -95,8 +95,18 @@
                 <Border Grid.Column="1" 
                         Background="White" 
                         Margin="20">
-                    <Frame x:Name="MainFrame" 
-                           NavigationUIVisibility="Hidden"/>
+                    <Grid>
+                        <!-- Фрейм с основным контентом -->
+                        <Frame x:Name="MainFrame" 
+                               NavigationUIVisibility="Hidden"/>
+                               
+                        <!-- Уведомления поверх контента -->
+                        <Grid x:Name="NotificationGrid" 
+                              Panel.ZIndex="9999"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Top"
+                              Margin="0,20,0,0"/>
+                    </Grid>
                 </Border>
             </Grid>
         </Grid>

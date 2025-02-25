@@ -64,6 +64,7 @@
     <Compile Include="AvailableRequestsPage.xaml.cs">
       <DependentUpon>AvailableRequestsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NotificationManager.cs" />
     <Compile Include="RequestDetailsPage.xaml.cs">
       <DependentUpon>RequestDetailsPage.xaml</DependentUpon>
     </Compile>

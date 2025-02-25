@@ -97,8 +97,7 @@ namespace ServiceWPF
             if (sender is Button button && button.Tag != null)
             {
                 var request = button.Tag as AdminRequest;
-                // Временно, пока нет БД
-                MessageBox.Show($"Выберите исполнителя для заявки: {request.Title}", "Назначение исполнителя", MessageBoxButton.OK, MessageBoxImage.Information);
+                NotificationManager.Show($"Исполнитель назначен на заявку: {request.Title}", NotificationType.Success);
             }
         }
 

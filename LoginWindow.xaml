@@ -8,9 +8,32 @@
         AllowsTransparency="True"
         ResizeMode="NoResize">
     <Window.Resources>
-        <!-- Найдите и удалите этот блок, если он есть -->
         <Style x:Key="CloseButtonStyle" TargetType="Button">
-            <!-- Удалить весь стиль -->
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#757575"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Width" Value="45"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="{TemplateBinding Background}">
+                            <TextBlock Text="×"
+                                     Foreground="{TemplateBinding Foreground}"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1AFF0000"/>
+                                <Setter Property="Foreground" Value="#FF0000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
     
@@ -23,10 +46,12 @@
 
             <!-- Заголовок окна с кнопкой закрытия -->
             <Grid Background="Transparent" MouseDown="Grid_MouseDown">
-                <Button Style="{StaticResource CloseButtonStyle}"
+                <Button Grid.Column="2"
+                        Style="{StaticResource CloseButtonStyle}"
+                        Click="CloseButton_Click"
+                        VerticalAlignment="Center"
                         HorizontalAlignment="Right"
-                        Margin="5"
-                        Click="CloseButton_Click"/>
+                        Margin="0,0,20,0"/>
             </Grid>
 
             <!-- Основной контент -->
