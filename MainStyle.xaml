@@ -33,4 +33,35 @@
         <Setter Property="BorderBrush" Value="#DDDDDD"/>
         <Setter Property="Background" Value="White"/>
     </Style>
+
+    <!-- В ResourceDictionary добавьте стиль для вкладок -->
+    <Style x:Key="TabRadioButtonStyle" TargetType="RadioButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Border x:Name="Border" 
+                                Background="Transparent" 
+                                BorderThickness="0,0,0,2" 
+                                BorderBrush="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center" 
+                                            Margin="0,0,0,10"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="#2196F3"/>
+                            <Setter Property="Foreground" Value="#2196F3"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter Property="Foreground" Value="#757575"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
 </ResourceDictionary>

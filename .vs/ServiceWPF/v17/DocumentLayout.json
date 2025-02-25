@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:loginwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\mainstyle.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:mainstyle.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\MainStyle.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:MainStyle.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\MainWindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:MainWindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -57,8 +57,7 @@
               "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\MainWindow.xaml",
               "RelativeToolTip": "MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-02-25T15:48:17.654Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-25T15:48:17.654Z"
             }
           ]
         }

@@ -24,12 +24,38 @@ namespace ServiceWPF
         {
             InitializeComponent();
             
-            // Добавляем обработчики событий для подсказки пароля
+            // Инициализируем начальное состояние
+            LoginTab.IsChecked = true;
+            LoginContent.Visibility = Visibility.Visible;
+            RegisterContent.Visibility = Visibility.Collapsed;
+            
+            // Добавляем обработчики событий для подсказок паролей
+            InitializePasswordHints();
+        }
+
+        private void InitializePasswordHints()
+        {
+            // Подсказки для входа
             PasswordBox.GotFocus += (s, e) => PasswordHint.Visibility = Visibility.Collapsed;
             PasswordBox.LostFocus += (s, e) => 
             {
                 if (string.IsNullOrEmpty(PasswordBox.Password))
                     PasswordHint.Visibility = Visibility.Visible;
+            };
+
+            // Подсказки для регистрации
+            RegisterPasswordBox.GotFocus += (s, e) => RegisterPasswordHint.Visibility = Visibility.Collapsed;
+            RegisterPasswordBox.LostFocus += (s, e) =>
+            {
+                if (string.IsNullOrEmpty(RegisterPasswordBox.Password))
+                    RegisterPasswordHint.Visibility = Visibility.Visible;
+            };
+
+            ConfirmPasswordBox.GotFocus += (s, e) => ConfirmPasswordHint.Visibility = Visibility.Collapsed;
+            ConfirmPasswordBox.LostFocus += (s, e) =>
+            {
+                if (string.IsNullOrEmpty(ConfirmPasswordBox.Password))
+                    ConfirmPasswordHint.Visibility = Visibility.Visible;
             };
         }
 
@@ -42,6 +68,44 @@ namespace ServiceWPF
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void LoginTab_Checked(object sender, RoutedEventArgs e)
+        {
+            if (LoginContent != null && RegisterContent != null)
+            {
+                LoginContent.Visibility = Visibility.Visible;
+                RegisterContent.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void RegisterTab_Checked(object sender, RoutedEventArgs e)
+        {
+            if (LoginContent != null && RegisterContent != null)
+            {
+                LoginContent.Visibility = Visibility.Collapsed;
+                RegisterContent.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Здесь будет логика входа
+        }
+
+        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Здесь будет логика регистрации
+        }
+
+        private void SwitchToRegister_Click(object sender, RoutedEventArgs e)
+        {
+            RegisterTab.IsChecked = true;
+        }
+
+        private void SwitchToLogin_Click(object sender, RoutedEventArgs e)
+        {
+            LoginTab.IsChecked = true;
         }
     }
 }
