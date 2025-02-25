@@ -1,0 +1,14 @@
+Solution
+├── Models/
+│   ├── User.cs
+│   ├── Request.cs
+│   └── RequestStatus.cs
+├── Views/
+│   ├── MainWindow.xaml
+│   ├── LoginWindow.xaml
+│   ├── UserDashboard.xaml
+│   ├── ExecutorDashboard.xaml
+│   └── AdminDashboard.xaml
+├── ViewModels/
+└── Styles/
+    └── MainStyle.xaml 
