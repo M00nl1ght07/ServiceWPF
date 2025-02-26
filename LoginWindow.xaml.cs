@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Data.SqlClient;
+using System.Security.Cryptography;
 
 namespace ServiceWPF
 {
@@ -24,6 +26,9 @@ namespace ServiceWPF
         {
             InitializeComponent();
             
+            // Инициализируем NotificationManager
+            NotificationManager.Initialize(this);
+            
             // Инициализируем начальное состояние
             LoginTab.IsChecked = true;
             LoginContent.Visibility = Visibility.Visible;
@@ -35,28 +40,35 @@ namespace ServiceWPF
 
         private void InitializePasswordHints()
         {
-            // Подсказки для входа
-            PasswordBox.GotFocus += (s, e) => PasswordHint.Visibility = Visibility.Collapsed;
-            PasswordBox.LostFocus += (s, e) => 
+            // Для поля пароля при входе
+            PasswordBox.PasswordChanged += (s, e) =>
             {
-                if (string.IsNullOrEmpty(PasswordBox.Password))
-                    PasswordHint.Visibility = Visibility.Visible;
+                PasswordHint.Visibility = string.IsNullOrEmpty(PasswordBox.Password) ? 
+                    Visibility.Visible : Visibility.Collapsed;
             };
 
-            // Подсказки для регистрации
-            RegisterPasswordBox.GotFocus += (s, e) => RegisterPasswordHint.Visibility = Visibility.Collapsed;
-            RegisterPasswordBox.LostFocus += (s, e) =>
+            // Для поля пароля при регистрации
+            RegisterPasswordBox.PasswordChanged += (s, e) =>
             {
-                if (string.IsNullOrEmpty(RegisterPasswordBox.Password))
-                    RegisterPasswordHint.Visibility = Visibility.Visible;
+                RegisterPasswordHint.Visibility = string.IsNullOrEmpty(RegisterPasswordBox.Password) ? 
+                    Visibility.Visible : Visibility.Collapsed;
             };
 
-            ConfirmPasswordBox.GotFocus += (s, e) => ConfirmPasswordHint.Visibility = Visibility.Collapsed;
-            ConfirmPasswordBox.LostFocus += (s, e) =>
+            // Для поля подтверждения пароля
+            ConfirmPasswordBox.PasswordChanged += (s, e) =>
             {
-                if (string.IsNullOrEmpty(ConfirmPasswordBox.Password))
-                    ConfirmPasswordHint.Visibility = Visibility.Visible;
+                ConfirmPasswordHint.Visibility = string.IsNullOrEmpty(ConfirmPasswordBox.Password) ? 
+                    Visibility.Visible : Visibility.Collapsed;
             };
+        }
+
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(hashedBytes);
+            }
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -90,27 +102,224 @@ namespace ServiceWPF
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            // Временно, пока нет БД
-            switch (UsernameTextBox.Text.ToLower())
+            if (string.IsNullOrWhiteSpace(UsernameTextBox.Text) || string.IsNullOrWhiteSpace(PasswordBox.Password))
             {
-                case "master":
-                    new MainWindow("executor").Show();
-                    this.Close();
-                    break;
-                case "admin":
-                    new MainWindow("admin").Show();
-                    this.Close();
-                    break;
-                default:
-                    new MainWindow("user").Show();
-                    this.Close();
-                    break;
+                NotificationManager.Show("Заполните все поля", NotificationType.Warning);
+                return;
+            }
+
+            try
+            {
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+                    var query = @"SELECT U.RoleID, U.IsActive, U.FirstName, U.LastName 
+                                 FROM Users U 
+                                 WHERE U.Login = @Login AND U.PasswordHash = @PasswordHash";
+
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Login", UsernameTextBox.Text);
+                        command.Parameters.AddWithValue("@PasswordHash", HashPassword(PasswordBox.Password));
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                var isActive = reader.GetBoolean(1);
+                                if (!isActive)
+                                {
+                                    NotificationManager.Show("Аккаунт заблокирован", NotificationType.Error);
+                                    return;
+                                }
+
+                                var roleId = reader.GetInt32(0);
+                                string userRole;
+                                switch (roleId)
+                                {
+                                    case 1:
+                                        userRole = "admin";
+                                        break;
+                                    case 2:
+                                        userRole = "executor";
+                                        break;
+                                    default:
+                                        userRole = "user";
+                                        break;
+                                }
+
+                                var firstName = reader.GetString(2);
+                                var lastName = reader.GetString(3);
+                                var fullName = $"{firstName} {lastName}";
+
+                                var mainWindow = new MainWindow(userRole);
+                                mainWindow.UserNameText.Text = fullName;
+                                mainWindow.Show();
+                                this.Close();
+                            }
+                            else
+                            {
+                                NotificationManager.Show("Неверный логин или пароль", NotificationType.Error);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при входе: {ex.Message}", NotificationType.Error);
             }
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            // Здесь будет логика регистрации
+            // Проверка логина
+            if (string.IsNullOrWhiteSpace(RegisterUsernameTextBox.Text))
+            {
+                NotificationManager.Show("Введите логин", NotificationType.Warning);
+                RegisterUsernameTextBox.Focus();
+                return;
+            }
+
+            if (RegisterUsernameTextBox.Text.Length < 3)
+            {
+                NotificationManager.Show("Логин должен содержать минимум 3 символа", NotificationType.Warning);
+                RegisterUsernameTextBox.Focus();
+                return;
+            }
+
+            // Проверка email
+            if (string.IsNullOrWhiteSpace(EmailTextBox.Text))
+            {
+                NotificationManager.Show("Введите email", NotificationType.Warning);
+                EmailTextBox.Focus();
+                return;
+            }
+
+            if (!EmailTextBox.Text.Contains("@") || !EmailTextBox.Text.Contains("."))
+            {
+                NotificationManager.Show("Введите корректный email", NotificationType.Warning);
+                EmailTextBox.Focus();
+                return;
+            }
+
+            // Проверка имени
+            if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text))
+            {
+                NotificationManager.Show("Введите имя", NotificationType.Warning);
+                FirstNameTextBox.Focus();
+                return;
+            }
+
+            // Проверка фамилии
+            if (string.IsNullOrWhiteSpace(LastNameTextBox.Text))
+            {
+                NotificationManager.Show("Введите фамилию", NotificationType.Warning);
+                LastNameTextBox.Focus();
+                return;
+            }
+
+            // Проверка пароля
+            if (string.IsNullOrWhiteSpace(RegisterPasswordBox.Password))
+            {
+                NotificationManager.Show("Введите пароль", NotificationType.Warning);
+                RegisterPasswordBox.Focus();
+                return;
+            }
+
+            if (RegisterPasswordBox.Password.Length < 6)
+            {
+                NotificationManager.Show("Пароль должен содержать минимум 6 символов", NotificationType.Warning);
+                RegisterPasswordBox.Focus();
+                return;
+            }
+
+            // Проверка подтверждения пароля
+            if (string.IsNullOrWhiteSpace(ConfirmPasswordBox.Password))
+            {
+                NotificationManager.Show("Подтвердите пароль", NotificationType.Warning);
+                ConfirmPasswordBox.Focus();
+                return;
+            }
+
+            if (RegisterPasswordBox.Password != ConfirmPasswordBox.Password)
+            {
+                NotificationManager.Show("Пароли не совпадают", NotificationType.Warning);
+                ConfirmPasswordBox.Focus();
+                return;
+            }
+
+            try
+            {
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+                    
+                    // Проверка существования пользователя
+                    var checkQuery = "SELECT COUNT(*) FROM Users WHERE Login = @Login";
+                    using (var checkCommand = new SqlCommand(checkQuery, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@Login", RegisterUsernameTextBox.Text);
+                        var count = (int)checkCommand.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            NotificationManager.Show("Пользователь с таким логином уже существует", NotificationType.Warning);
+                            RegisterUsernameTextBox.Focus();
+                            return;
+                        }
+                    }
+
+                    // Проверка существования email
+                    checkQuery = "SELECT COUNT(*) FROM Users WHERE Email = @Email";
+                    using (var checkCommand = new SqlCommand(checkQuery, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@Email", EmailTextBox.Text);
+                        var count = (int)checkCommand.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            NotificationManager.Show("Пользователь с таким email уже существует", NotificationType.Warning);
+                            EmailTextBox.Focus();
+                            return;
+                        }
+                    }
+
+                    // Регистрация пользователя
+                    var registerQuery = @"INSERT INTO Users (Login, PasswordHash, Email, FirstName, LastName, MiddleName, RoleID, IsActive) 
+                                        VALUES (@Login, @PasswordHash, @Email, @FirstName, @LastName, @MiddleName, 3, 1)";
+                    
+                    using (var registerCommand = new SqlCommand(registerQuery, connection))
+                    {
+                        registerCommand.Parameters.AddWithValue("@Login", RegisterUsernameTextBox.Text);
+                        registerCommand.Parameters.AddWithValue("@PasswordHash", HashPassword(RegisterPasswordBox.Password));
+                        registerCommand.Parameters.AddWithValue("@Email", EmailTextBox.Text);
+                        registerCommand.Parameters.AddWithValue("@FirstName", FirstNameTextBox.Text);
+                        registerCommand.Parameters.AddWithValue("@LastName", LastNameTextBox.Text);
+                        registerCommand.Parameters.AddWithValue("@MiddleName", 
+                            string.IsNullOrWhiteSpace(MiddleNameTextBox.Text) ? DBNull.Value : (object)MiddleNameTextBox.Text);
+
+                        registerCommand.ExecuteNonQuery();
+
+                        // Очищаем поля
+                        RegisterUsernameTextBox.Clear();
+                        EmailTextBox.Clear();
+                        FirstNameTextBox.Clear();
+                        LastNameTextBox.Clear();
+                        MiddleNameTextBox.Clear();
+                        RegisterPasswordBox.Clear();
+                        ConfirmPasswordBox.Clear();
+
+                        // Показываем уведомление об успехе
+                        NotificationManager.Show("Регистрация успешно завершена! Теперь вы можете войти в систему", NotificationType.Success);
+                        
+                        // Переключаемся на вкладку входа
+                        LoginTab.IsChecked = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при регистрации: {ex.Message}", NotificationType.Error);
+            }
         }
 
         private void SwitchToRegister_Click(object sender, RoutedEventArgs e)

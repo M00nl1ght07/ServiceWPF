@@ -3,44 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\databasemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:databasemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\statisticspage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:statisticspage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\loginwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:loginwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\NotificationManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:NotificationManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\AvailableRequestsPage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:AvailableRequestsPage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\StatisticsPage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:StatisticsPage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\UsersPage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:UsersPage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:AllRequestsPage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\CreateRequestPage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:CreateRequestPage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:AllRequestsPage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|C:\\Users\\igris\\source\\repos\\ServiceWPF\\MainWindow.xaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:MainWindow.xaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\loginwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:loginwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -55,121 +27,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "DatabaseManager.cs",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\DatabaseManager.cs",
-              "RelativeDocumentMoniker": "DatabaseManager.cs",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\DatabaseManager.cs",
-              "RelativeToolTip": "DatabaseManager.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAEIAAAABAAAA",
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\MainWindow.xaml.cs",
+              "RelativeToolTip": "MainWindow.xaml.cs",
+              "ViewState": "AQIAADAAAAAAAAAAAAAQwB8AAAAiAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-26T09:06:36.714Z",
+              "WhenOpened": "2025-02-26T19:50:35.82Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "LoginWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\LoginWindow.xaml",
+              "RelativeDocumentMoniker": "LoginWindow.xaml",
+              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\LoginWindow.xaml",
+              "RelativeToolTip": "LoginWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-02-26T18:51:43.586Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "NotificationManager.cs",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\NotificationManager.cs",
-              "RelativeDocumentMoniker": "NotificationManager.cs",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\NotificationManager.cs",
-              "RelativeToolTip": "NotificationManager.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAEAAAAbAAAA",
+              "Title": "LoginWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\LoginWindow.xaml.cs",
+              "RelativeDocumentMoniker": "LoginWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\LoginWindow.xaml.cs",
+              "RelativeToolTip": "LoginWindow.xaml.cs",
+              "ViewState": "AQIAAHUAAAAAAAAAAADgv5cAAAAtAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-25T20:16:13.476Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "AvailableRequestsPage.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AvailableRequestsPage.xaml.cs",
-              "RelativeDocumentMoniker": "AvailableRequestsPage.xaml.cs",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AvailableRequestsPage.xaml.cs",
-              "RelativeToolTip": "AvailableRequestsPage.xaml.cs",
-              "ViewState": "AQIAADYAAAAAAAAAAADgv0cAAABDAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-25T20:14:37.146Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "StatisticsPage.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\StatisticsPage.xaml.cs",
-              "RelativeDocumentMoniker": "StatisticsPage.xaml.cs",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\StatisticsPage.xaml.cs",
-              "RelativeToolTip": "StatisticsPage.xaml.cs",
-              "ViewState": "AQIAAGIAAAAAAAAAAADwv4MAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-25T20:04:07.175Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "StatisticsPage.xaml",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\StatisticsPage.xaml",
-              "RelativeDocumentMoniker": "StatisticsPage.xaml",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\StatisticsPage.xaml",
-              "RelativeToolTip": "StatisticsPage.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-02-25T20:03:28.138Z",
+              "WhenOpened": "2025-02-26T18:39:34.414Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UsersPage.xaml",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\UsersPage.xaml",
-              "RelativeDocumentMoniker": "UsersPage.xaml",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\UsersPage.xaml",
-              "RelativeToolTip": "UsersPage.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-02-25T20:00:48.528Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "AllRequestsPage.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml.cs",
-              "RelativeDocumentMoniker": "AllRequestsPage.xaml.cs",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml.cs",
-              "RelativeToolTip": "AllRequestsPage.xaml.cs",
-              "ViewState": "AQIAAFIAAAAAAAAAAADgv2MAAAAQAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-25T19:26:20.484Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "CreateRequestPage.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\CreateRequestPage.xaml.cs",
-              "RelativeDocumentMoniker": "CreateRequestPage.xaml.cs",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\CreateRequestPage.xaml.cs",
-              "RelativeToolTip": "CreateRequestPage.xaml.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAMAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-25T19:26:11.949Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "AllRequestsPage.xaml",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml",
-              "RelativeDocumentMoniker": "AllRequestsPage.xaml",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml",
-              "RelativeToolTip": "AllRequestsPage.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-02-25T19:24:43.996Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "MainWindow.xaml",
-              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\MainWindow.xaml",
-              "RelativeToolTip": "MainWindow.xaml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-02-25T18:34:27.132Z"
             }
           ]
         }
