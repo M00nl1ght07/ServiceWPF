@@ -74,6 +74,9 @@ namespace ServiceWPF
 
                     // Загружаем историю заявки
                     LoadRequestHistory();
+
+                    // После загрузки основных деталей добавим загрузку комментариев
+                    LoadComments();
                 }
             }
             catch (Exception ex)
@@ -129,6 +132,53 @@ namespace ServiceWPF
             }
         }
 
+        private void LoadComments()
+        {
+            try
+            {
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+                    var query = @"SELECT 
+                                FORMAT(C.CreatedDate, 'dd.MM.yyyy HH:mm') as CommentDate,
+                                C.Text,
+                                CONCAT(U.LastName, ' ', LEFT(U.FirstName, 1), '.', 
+                                    CASE 
+                                        WHEN U.MiddleName IS NOT NULL 
+                                        THEN CONCAT(LEFT(U.MiddleName, 1), '.')
+                                        ELSE ''
+                                    END) as Author
+                                FROM RequestComments C
+                                JOIN Users U ON C.UserID = U.UserID
+                                WHERE C.RequestID = @RequestID
+                                ORDER BY C.CreatedDate DESC";
+
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@RequestID", _requestId);
+                        using (var reader = command.ExecuteReader())
+                        {
+                            var comments = new List<dynamic>();
+                            while (reader.Read())
+                            {
+                                comments.Add(new
+                                {
+                                    Date = reader.GetString(0),
+                                    Text = reader.GetString(1),
+                                    Author = reader.GetString(2)
+                                });
+                            }
+                            CommentsList.ItemsSource = comments;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при загрузке комментариев: {ex.Message}", NotificationType.Error);
+            }
+        }
+
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             NavigationService?.GoBack();
@@ -136,8 +186,62 @@ namespace ServiceWPF
 
         private void AddComment_Click(object sender, RoutedEventArgs e)
         {
-            // Пока оставим пустым, позже добавим логику добавления комментариев
-            NotificationManager.Show("Функция добавления комментариев будет доступна позже", NotificationType.Info);
+            var commentText = CommentBox.Text.Trim();
+            if (string.IsNullOrEmpty(commentText))
+            {
+                NotificationManager.Show("Введите текст комментария", NotificationType.Warning);
+                return;
+            }
+
+            try
+            {
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+
+                    // Получаем ID текущего пользователя
+                    var currentUserLogin = "";
+                    if (Application.Current.MainWindow is MainWindow mainWindow)
+                    {
+                        currentUserLogin = mainWindow.CurrentUserLogin;
+                    }
+
+                    var getUserIdQuery = "SELECT UserID FROM Users WHERE Login = @Login";
+                    int userId;
+                    using (var command = new SqlCommand(getUserIdQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@Login", currentUserLogin);
+                        var result = command.ExecuteScalar();
+                        if (result == null)
+                        {
+                            NotificationManager.Show("Ошибка: пользователь не найден", NotificationType.Error);
+                            return;
+                        }
+                        userId = (int)result;
+                    }
+
+                    // Добавляем комментарий
+                    var query = @"INSERT INTO RequestComments (RequestID, UserID, Text, CreatedDate)
+                                 VALUES (@RequestID, @UserID, @Text, GETDATE())";
+
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@RequestID", _requestId);
+                        command.Parameters.AddWithValue("@UserID", userId);
+                        command.Parameters.AddWithValue("@Text", commentText);
+                        command.ExecuteNonQuery();
+                    }
+
+                    // Очищаем поле ввода и обновляем список комментариев
+                    CommentBox.Clear();
+                    LoadComments();
+                    NotificationManager.Show("Комментарий добавлен", NotificationType.Success);
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при добавлении комментария: {ex.Message}", NotificationType.Error);
+            }
         }
     }
 }
