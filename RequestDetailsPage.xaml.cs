@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Data.SqlClient;
 
 namespace ServiceWPF
 {
@@ -20,74 +21,123 @@ namespace ServiceWPF
     /// </summary>
     public partial class RequestDetailsPage : Page
     {
-        public RequestDetailsPage()
+        private int _requestId;
+
+        public RequestDetailsPage(int requestId)
         {
             InitializeComponent();
+            _requestId = requestId;
             LoadRequestDetails();
-            LoadHistory();
-            LoadComments();
         }
 
         private void LoadRequestDetails()
         {
-            // Временно, пока нет БД
-            TitleBlock.Text = "Не работает принтер";
-            CreatedDateBlock.Text = "15.03.2024";
-            StatusBlock.Text = "В работе";
-            PriorityBlock.Text = "Высокий";
-            ExecutorBlock.Text = "Иванов И.И.";
-            DescriptionBlock.Text = "Принтер HP в кабинете 405 не печатает документы. При отправке на печать появляется ошибка.";
-        }
-
-        private void LoadHistory()
-        {
-            // Временно, пока нет БД
-            var history = new[]
+            try
             {
-                new { Status = "В работе", Date = "15.03.2024 15:30" },
-                new { Status = "Назначен исполнитель", Date = "15.03.2024 14:45" },
-                new { Status = "Новая", Date = "15.03.2024 14:30" }
-            };
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+                    var query = @"SELECT R.Title, R.Description, 
+                                FORMAT(R.CreatedDate, 'dd.MM.yyyy HH:mm') as CreatedDate,
+                                S.Name as Status, P.Name as Priority,
+                                CONCAT(U.LastName, ' ', U.FirstName, ' ', ISNULL(U.MiddleName, '')) as CreatedBy,
+                                CONCAT(E.LastName, ' ', E.FirstName, ' ', ISNULL(E.MiddleName, '')) as Executor,
+                                FORMAT(R.CompletionDate, 'dd.MM.yyyy HH:mm') as CompletionDate,
+                                FORMAT(R.LastModifiedDate, 'dd.MM.yyyy HH:mm') as LastModifiedDate
+                                FROM Requests R
+                                JOIN RequestStatuses S ON R.StatusID = S.StatusID
+                                JOIN RequestPriorities P ON R.PriorityID = P.PriorityID
+                                JOIN Users U ON R.CreatedByUserID = U.UserID
+                                LEFT JOIN Users E ON R.ExecutorID = E.UserID
+                                WHERE R.RequestID = @RequestID";
 
-            HistoryList.ItemsSource = history;
-        }
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@RequestID", _requestId);
 
-        private void LoadComments()
-        {
-            // Временно, пока нет БД
-            var comments = new[]
-            {
-                new { 
-                    Author = "Иванов Иван", 
-                    Text = "Выезжаю на место для диагностики проблемы", 
-                    Date = "15.03.2024 15:30" 
-                },
-                new { 
-                    Author = "Петров Петр", 
-                    Text = "Заявка принята в работу", 
-                    Date = "15.03.2024 14:45" 
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                TitleTextBlock.Text = reader.GetString(0);
+                                DescriptionTextBlock.Text = reader.GetString(1);
+                                CreatedDateTextBlock.Text = reader.GetString(2);
+                                StatusTextBlock.Text = reader.GetString(3);
+                                PriorityTextBlock.Text = reader.GetString(4);
+                                CreatedByTextBlock.Text = reader.GetString(5);
+                                ExecutorTextBlock.Text = reader.IsDBNull(6) ? "Не назначен" : reader.GetString(6);
+                                CompletionDateTextBlock.Text = reader.IsDBNull(7) ? "Не завершена" : reader.GetString(7);
+                                LastModifiedDateTextBlock.Text = reader.GetString(8);
+                            }
+                        }
+                    }
+
+                    // Загружаем историю заявки
+                    LoadRequestHistory();
                 }
-            };
-
-            CommentsList.ItemsSource = comments;
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при загрузке деталей заявки: {ex.Message}", NotificationType.Error);
+            }
         }
 
-        private void AddComment_Click(object sender, RoutedEventArgs e)
+        private void LoadRequestHistory()
         {
-            if (string.IsNullOrWhiteSpace(CommentBox.Text))
+            try
             {
-                NotificationManager.Show("Введите текст комментария", NotificationType.Warning);
-                return;
-            }
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+                    var query = @"SELECT FORMAT(H.ChangeDate, 'dd.MM.yyyy HH:mm') as ChangeDate,
+                                CONCAT(U.LastName, ' ', 
+                                      LEFT(U.FirstName, 1), '.', 
+                                      CASE 
+                                        WHEN U.MiddleName IS NOT NULL 
+                                        THEN CONCAT(LEFT(U.MiddleName, 1), '.')
+                                        ELSE ''
+                                      END) as ChangedBy,
+                                H.Comment
+                                FROM RequestHistory H
+                                JOIN Users U ON H.ChangedByUserID = U.UserID
+                                WHERE H.RequestID = @RequestID
+                                ORDER BY H.ChangeDate DESC";
 
-            // Временно, пока нет БД
-            NotificationManager.Show("Комментарий добавлен!", NotificationType.Success);
-            CommentBox.Clear();
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@RequestID", _requestId);
+                        using (var reader = command.ExecuteReader())
+                        {
+                            var history = new List<dynamic>();
+                            while (reader.Read())
+                            {
+                                history.Add(new
+                                {
+                                    ChangeDate = reader.GetString(0),
+                                    ChangedBy = reader.GetString(1),
+                                    Comment = reader.IsDBNull(2) ? "" : reader.GetString(2)
+                                });
+                            }
+                            HistoryList.ItemsSource = history;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при загрузке истории заявки: {ex.Message}", NotificationType.Error);
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             NavigationService?.GoBack();
+        }
+
+        private void AddComment_Click(object sender, RoutedEventArgs e)
+        {
+            // Пока оставим пустым, позже добавим логику добавления комментариев
+            NotificationManager.Show("Функция добавления комментариев будет доступна позже", NotificationType.Info);
         }
     }
 }

@@ -33,7 +33,7 @@
 
                 <!-- Заголовок и статус -->
                 <StackPanel>
-                    <TextBlock x:Name="TitleBlock"
+                    <TextBlock x:Name="TitleTextBlock"
                              Text="Не работает принтер"
                              FontSize="24"
                              FontWeight="Medium"/>
@@ -41,13 +41,13 @@
                               Margin="0,10,0,0">
                         <TextBlock Text="Создана: "
                                  Foreground="#757575"/>
-                        <TextBlock x:Name="CreatedDateBlock"
+                        <TextBlock x:Name="CreatedDateTextBlock"
                                  Text="15.03.2024"
                                  Foreground="#757575"/>
                         <TextBlock Text=" • "
                                  Foreground="#757575"
                                  Margin="5,0"/>
-                        <TextBlock x:Name="StatusBlock"
+                        <TextBlock x:Name="StatusTextBlock"
                                  Text="В работе"
                                  Foreground="#2196F3"/>
                         <TextBlock Text=" • "
@@ -55,7 +55,7 @@
                                  Margin="5,0"/>
                         <TextBlock Text="Исполнитель: "
                                  Foreground="#757575"/>
-                        <TextBlock x:Name="ExecutorBlock"
+                        <TextBlock x:Name="ExecutorTextBlock"
                                  Text="Не назначен"
                                  Foreground="#2196F3"/>
                     </StackPanel>
@@ -66,7 +66,7 @@
                         Background="#FFF3E0"
                         Padding="12,6"
                         CornerRadius="4">
-                    <TextBlock x:Name="PriorityBlock"
+                    <TextBlock x:Name="PriorityTextBlock"
                              Text="Высокий"
                              Foreground="#F57C00"/>
                 </Border>
@@ -77,11 +77,24 @@
                      FontSize="16"
                      FontWeight="Medium"
                      Margin="0,0,0,10"/>
-            <TextBlock x:Name="DescriptionBlock"
+            <TextBlock x:Name="DescriptionTextBlock"
                      Text="Принтер HP в кабинете 405 не печатает документы. При отправке на печать появляется ошибка."
                      TextWrapping="Wrap"
                      Foreground="#757575"
                      Margin="0,0,0,30"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <TextBlock Text="Создал: "/>
+                <TextBlock x:Name="CreatedByTextBlock" Text=""/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <TextBlock Text="Дата завершения: "/>
+                <TextBlock x:Name="CompletionDateTextBlock" Text=""/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <TextBlock Text="Последнее изменение: "/>
+                <TextBlock x:Name="LastModifiedDateTextBlock" Text=""/>
+            </StackPanel>
         </StackPanel>
 
         <!-- История и комментарии -->
@@ -97,23 +110,47 @@
                          FontSize="16"
                          FontWeight="Medium"
                          Margin="0,0,0,15"/>
-                <ItemsControl x:Name="HistoryList">
-                    <ItemsControl.ItemTemplate>
+                <ListView x:Name="HistoryList" 
+                         BorderThickness="0"
+                         Background="Transparent">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#F5F5F5"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderThickness="0,0,0,1"
-                                    BorderBrush="#E0E0E0"
-                                    Padding="0,10">
+                            <Border Padding="12"
+                                    BorderThickness="0,0,0,1"
+                                    BorderBrush="#E0E0E0">
                                 <StackPanel>
-                                    <TextBlock Text="{Binding Status}"
-                                             Foreground="#2196F3"/>
-                                    <TextBlock Text="{Binding Date}"
-                                             Foreground="#757575"
-                                             Margin="0,5,0,0"/>
+                                    <TextBlock Text="{Binding Comment}"
+                                             TextWrapping="Wrap"/>
+                                    <StackPanel Orientation="Horizontal"
+                                              Margin="0,5,0,0">
+                                        <TextBlock Text="{Binding ChangeDate}"
+                                                 Foreground="#757575"/>
+                                        <TextBlock Text=" • "
+                                                 Foreground="#757575"
+                                                 Margin="5,0"/>
+                                        <TextBlock Text="{Binding ChangedBy}"
+                                                 Foreground="#2196F3"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    </ListView.ItemTemplate>
+                </ListView>
             </StackPanel>
 
             <!-- Комментарии -->

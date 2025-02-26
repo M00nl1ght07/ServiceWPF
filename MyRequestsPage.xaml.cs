@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using ServiceWPF; // Добавляем для NotificationManager
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Windows.Threading;
+using ServiceWPF;
 
 namespace ServiceWPF
 {
@@ -10,79 +13,73 @@ namespace ServiceWPF
         public MyRequestsPage()
         {
             InitializeComponent();
+            
+            // Подписываемся на событие загрузки страницы
+            this.Loaded += MyRequestsPage_Loaded;
+        }
+
+        private void MyRequestsPage_Loaded(object sender, RoutedEventArgs e)
+        {
             LoadRequests();
         }
 
         private void LoadRequests()
         {
-            // Временные данные, пока нет БД
-            var requests = new[]
+            try
             {
-                new {
-                    Title = "Не работает принтер",
-                    Description = "Принтер HP в кабинете 405 не печатает документы. При отправке на печать появляется ошибка.",
-                    CreatedDate = "15.03.2024",
-                    Status = "В работе",
-                    Priority = "Высокий"
-                },
-                new {
-                    Title = "Замена картриджа",
-                    Description = "Требуется замена картриджа в принтере Samsung кабинета 301.",
-                    CreatedDate = "14.03.2024",
-                    Status = "Новая",
-                    Priority = "Средний"
-                },
-                new {
-                    Title = "Настройка почты",
-                    Description = "Необходимо настроить корпоративную почту на новом компьютере.",
-                    CreatedDate = "13.03.2024",
-                    Status = "Новая",
-                    Priority = "Низкий"
-                },
-                new {
-                    Title = "Установка ПО",
-                    Description = "Требуется установить пакет Microsoft Office на компьютер в кабинете 506.",
-                    CreatedDate = "12.03.2024",
-                    Status = "В работе",
-                    Priority = "Средний"
-                },
-                new {
-                    Title = "Не работает интернет",
-                    Description = "Отсутствует подключение к интернету на всех компьютерах 4 этажа.",
-                    CreatedDate = "11.03.2024",
-                    Status = "Завершена",
-                    Priority = "Высокий"
-                },
-                new {
-                    Title = "Замена картриджа",
-                    Description = "Требуется замена картриджа в принтере Samsung кабинета 301.",
-                    CreatedDate = "14.03.2024",
-                    Status = "Новая",
-                    Priority = "Средний"
-                },
-                new {
-                    Title = "Настройка почты",
-                    Description = "Необходимо настроить корпоративную почту на новом компьютере.",
-                    CreatedDate = "13.03.2024",
-                    Status = "Новая",
-                    Priority = "Низкий"
-                },
-                new {
-                    Title = "Установка ПО",
-                    Description = "Требуется установить пакет Microsoft Office на компьютер в кабинете 506.",
-                    CreatedDate = "12.03.2024",
-                    Status = "В работе",
-                    Priority = "Средний"
-                },
-                new {
-                    Title = "Не работает интернет",
-                    Description = "Отсутствует подключение к интернету на всех компьютерах 4 этажа.",
-                    CreatedDate = "11.03.2024",
-                    Status = "Завершена",
-                    Priority = "Высокий"
+                var currentUserLogin = "";
+                if (Application.Current.MainWindow is MainWindow mainWindow)
+                {
+                    currentUserLogin = mainWindow.CurrentUserLogin;
                 }
-            };
+                else
+                {
+                    // Если окно еще не установлено, пробуем через 100мс
+                    Dispatcher.BeginInvoke(new Action(() => LoadRequests()), System.Windows.Threading.DispatcherPriority.Loaded);
+                    return;
+                }
 
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+                    var query = @"SELECT R.RequestID, R.Title, R.Description, 
+                                FORMAT(R.CreatedDate, 'dd.MM.yyyy') as CreatedDate, 
+                                S.Name as Status, P.Name as Priority
+                             FROM Requests R
+                             JOIN RequestStatuses S ON R.StatusID = S.StatusID
+                             JOIN RequestPriorities P ON R.PriorityID = P.PriorityID
+                             JOIN Users U ON R.CreatedByUserID = U.UserID
+                             WHERE U.Login = @Login
+                             ORDER BY R.CreatedDate DESC";
+
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Login", currentUserLogin);
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            var requests = new List<dynamic>();
+                            while (reader.Read())
+                            {
+                                requests.Add(new
+                                {
+                                    RequestID = reader.GetInt32(0),
+                                    Title = reader.GetString(1),
+                                    Description = reader.GetString(2),
+                                    CreatedDate = reader.GetString(3),
+                                    Status = reader.GetString(4),
+                                    Priority = reader.GetString(5)
+                                });
+                            }
+                            RequestsList.ItemsSource = requests;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при загрузке заявок: {ex.Message}", NotificationType.Error);
+            }
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -102,6 +99,12 @@ namespace ServiceWPF
 
         private void RequestsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (RequestsList.SelectedItem != null)
+            {
+                dynamic selectedRequest = RequestsList.SelectedItem;
+                NavigationService?.Navigate(new RequestDetailsPage(selectedRequest.RequestID));
+                RequestsList.SelectedItem = null;
+            }
         }
     }
 }

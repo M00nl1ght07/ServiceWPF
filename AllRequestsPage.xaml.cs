@@ -44,6 +44,8 @@ namespace ServiceWPF
 
     {
 
+        public int RequestID { get; set; }
+
         public string Title { get; set; }
 
         public string Description { get; set; }
@@ -51,6 +53,8 @@ namespace ServiceWPF
         public string CreatedDate { get; set; }
 
         public string Status { get; set; }
+
+        public string Priority { get; set; }
 
         public string Executor { get; set; }
 
@@ -178,7 +182,9 @@ namespace ServiceWPF
 
             {
 
-                NavigationService?.Navigate(new RequestDetailsPage());
+                var selectedRequest = RequestsList.SelectedItem as AdminRequest;
+
+                NavigationService?.Navigate(new RequestDetailsPage(selectedRequest.RequestID));
 
                 RequestsList.SelectedItem = null;
 
