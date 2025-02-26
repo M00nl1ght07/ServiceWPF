@@ -21,15 +21,29 @@ namespace ServiceWPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(string userRole = "user") // временно, пока нет БД
+        public MainWindow(string userRole = "user")
         {
             InitializeComponent();
             NotificationManager.Initialize(this);
-            DatabaseManager.TestConnection(); // Проверяем подключение к БД
+            DatabaseManager.TestConnection();
             ConfigureForRole(userRole);
             
-            // Загружаем начальную страницу
-            MainFrame.Navigate(new MyRequestsPage());
+            // Загружаем начальную страницу в зависимости от роли
+            switch (userRole.ToLower())
+            {
+                case "admin":
+                    MainFrame.Navigate(new AllRequestsPage());
+                    CurrentPageTitle.Text = "Все заявки";
+                    break;
+                case "executor":
+                    MainFrame.Navigate(new AvailableRequestsPage());
+                    CurrentPageTitle.Text = "Доступные заявки";
+                    break;
+                default:
+                    MainFrame.Navigate(new MyRequestsPage());
+                    CurrentPageTitle.Text = "Мои заявки";
+                    break;
+            }
         }
 
         private void ConfigureForRole(string role)
@@ -101,17 +115,20 @@ namespace ServiceWPF
             // Конфигурация для администратора
             MenuPanel.Children.Clear();
             
-            MenuPanel.Children.Add(new RadioButton 
+            var allRequestsButton = new RadioButton 
             { 
                 Content = "Все заявки",
                 Style = FindResource("MenuButtonStyle") as Style,
-                IsChecked = true
-            });
+                IsChecked = true  // Устанавливаем активным первый пункт
+            };
+            MenuPanel.Children.Add(allRequestsButton);
+            
             MenuPanel.Children.Add(new RadioButton 
             { 
                 Content = "Пользователи",
                 Style = FindResource("MenuButtonStyle") as Style
             });
+            
             MenuPanel.Children.Add(new RadioButton 
             { 
                 Content = "Статистика",
