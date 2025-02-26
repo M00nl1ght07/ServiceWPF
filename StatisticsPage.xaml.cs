@@ -26,106 +26,146 @@ using System.Windows.Navigation;
 
 using System.Windows.Shapes;
 
-
+using System.Data.SqlClient;
 
 namespace ServiceWPF
-
 {
-
     /// <summary>
-
     /// Логика взаимодействия для StatisticsPage.xaml
-
     /// </summary>
-
-    public class ExecutorStatistics
-
-    {
-
-        public string Name { get; set; }
-
-        public string ActiveRequests { get; set; }
-
-        public string CompletedRequests { get; set; }
-
-    }
-
-
-
     public partial class StatisticsPage : Page
-
     {
-
         public StatisticsPage()
-
         {
-
             InitializeComponent();
-
             LoadStatistics();
-
         }
-
-
 
         private void LoadStatistics()
-
         {
-
-            // Временные данные, пока нет БД
-
-            TotalRequestsBlock.Text = "156";
-
-            ActiveRequestsBlock.Text = "23";
-
-            CompletedRequestsBlock.Text = "48";
-
-
-
-            var executors = new[]
-
+            try
             {
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
 
-                new ExecutorStatistics {
+                    // Общее количество заявок
+                    var totalQuery = "SELECT COUNT(*) FROM Requests";
+                    using (var command = new SqlCommand(totalQuery, connection))
+                    {
+                        TotalRequestsCount.Text = command.ExecuteScalar().ToString();
+                    }
 
-                    Name = "Иванов И.И.",
+                    // Статистика по статусам
+                    var statusQuery = @"SELECT 
+                                    S.Name,
+                                    COUNT(R.RequestID) as Count
+                                    FROM RequestStatuses S
+                                    LEFT JOIN Requests R ON S.StatusID = R.StatusID
+                                    GROUP BY S.Name
+                                    ORDER BY Count DESC";
 
-                    ActiveRequests = "12 в работе",
+                    using (var command = new SqlCommand(statusQuery, connection))
+                    {
+                        var statusStats = new List<dynamic>();
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                statusStats.Add(new
+                                {
+                                    Status = reader.GetString(0),
+                                    Count = reader.GetInt32(1)
+                                });
+                            }
+                        }
+                        StatusStatsList.ItemsSource = statusStats;
+                    }
 
-                    CompletedRequests = "28 выполнено"
+                    // Статистика по приоритетам
+                    var priorityQuery = @"SELECT 
+                                      P.Name,
+                                      COUNT(R.RequestID) as Count
+                                      FROM RequestPriorities P
+                                      LEFT JOIN Requests R ON P.PriorityID = R.PriorityID
+                                      GROUP BY P.Name
+                                      ORDER BY Count DESC";
 
-                },
+                    using (var command = new SqlCommand(priorityQuery, connection))
+                    {
+                        var priorityStats = new List<dynamic>();
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                priorityStats.Add(new
+                                {
+                                    Priority = reader.GetString(0),
+                                    Count = reader.GetInt32(1)
+                                });
+                            }
+                        }
+                        PriorityStatsList.ItemsSource = priorityStats;
+                    }
 
-                new ExecutorStatistics {
+                    // Топ исполнителей
+                    var executorsQuery = @"SELECT TOP 5
+                                       CONCAT(U.LastName, ' ', LEFT(U.FirstName, 1), '.', 
+                                           CASE WHEN U.MiddleName IS NOT NULL 
+                                           THEN CONCAT(LEFT(U.MiddleName, 1), '.') 
+                                           ELSE '' END) as ExecutorName,
+                                       COUNT(R.RequestID) as CompletedCount
+                                       FROM Users U
+                                       JOIN Requests R ON U.UserID = R.ExecutorID
+                                       JOIN RequestStatuses S ON R.StatusID = S.StatusID
+                                       WHERE S.Name = 'Завершена'
+                                       GROUP BY U.UserID, U.LastName, U.FirstName, U.MiddleName
+                                       ORDER BY CompletedCount DESC";
 
-                    Name = "Петров П.П.",
+                    using (var command = new SqlCommand(executorsQuery, connection))
+                    {
+                        var executorStats = new List<dynamic>();
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                executorStats.Add(new
+                                {
+                                    Name = reader.GetString(0),
+                                    CompletedCount = reader.GetInt32(1)
+                                });
+                            }
+                        }
+                        TopExecutorsList.ItemsSource = executorStats;
+                    }
 
-                    ActiveRequests = "8 в работе",
+                    // Среднее время выполнения заявок (в часах)
+                    var avgTimeQuery = @"SELECT 
+                                     AVG(DATEDIFF(HOUR, CreatedDate, CompletionDate)) as AvgHours
+                                     FROM Requests 
+                                     WHERE CompletionDate IS NOT NULL";
 
-                    CompletedRequests = "15 выполнено"
-
-                },
-
-                new ExecutorStatistics {
-
-                    Name = "Сидоров С.С.",
-
-                    ActiveRequests = "3 в работе",
-
-                    CompletedRequests = "5 выполнено"
-
+                    using (var command = new SqlCommand(avgTimeQuery, connection))
+                    {
+                        var result = command.ExecuteScalar();
+                        if (result != DBNull.Value)
+                        {
+                            var hours = Convert.ToDouble(result);
+                            AverageCompletionTime.Text = $"{Math.Round(hours, 1)} часов";
+                        }
+                        else
+                        {
+                            AverageCompletionTime.Text = "Нет данных";
+                        }
+                    }
                 }
-
-            };
-
-
-
-            ExecutorsList.ItemsSource = executors;
-
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при загрузке статистики: {ex.Message}", NotificationType.Error);
+            }
         }
-
     }
-
 }
 
 

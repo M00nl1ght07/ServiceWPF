@@ -4,178 +4,111 @@
       Title="Статистика"
       Background="White">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0">
+    <ScrollViewer>
+        <StackPanel Margin="20">
             <!-- Общая статистика -->
             <TextBlock Text="Общая статистика"
-                     FontSize="20"
+                     FontSize="24"
                      FontWeight="Medium"
                      Margin="0,0,0,20"/>
 
-            <Grid Margin="0,0,0,30">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Всего заявок -->
+            <WrapPanel>
+                <!-- Общее количество заявок -->
                 <Border Background="#E3F2FD"
                         Padding="20"
-                        Margin="0,0,10,0"
-                        CornerRadius="4">
+                        CornerRadius="4"
+                        Margin="0,0,20,20"
+                        Width="200">
                     <StackPanel>
                         <TextBlock Text="Всего заявок"
-                                 FontSize="14"
-                                 Foreground="#1976D2"/>
-                        <TextBlock x:Name="TotalRequestsBlock"
-                                 Text="156"
+                                 FontWeight="Medium"/>
+                        <TextBlock x:Name="TotalRequestsCount"
+                                 Text="0"
                                  FontSize="24"
                                  FontWeight="Medium"
-                                 Foreground="#1976D2"
-                                 Margin="0,5,0,0"/>
+                                 Margin="0,10,0,0"/>
                     </StackPanel>
                 </Border>
+            </WrapPanel>
 
-                <!-- Заявок в работе -->
-                <Border Grid.Column="1"
-                        Background="#FFF3E0"
-                        Padding="20"
-                        Margin="10,0"
-                        CornerRadius="4">
-                    <StackPanel>
-                        <TextBlock Text="В работе"
-                                 FontSize="14"
-                                 Foreground="#F57C00"/>
-                        <TextBlock x:Name="ActiveRequestsBlock"
-                                 Text="23"
-                                 FontSize="24"
-                                 FontWeight="Medium"
-                                 Foreground="#F57C00"
-                                 Margin="0,5,0,0"/>
-                    </StackPanel>
-                </Border>
+            <!-- Статистика по статусам -->
+            <TextBlock Text="Статистика по статусам"
+                     FontSize="20"
+                     FontWeight="Medium"
+                     Margin="0,20"/>
 
-                <!-- Выполнено за месяц -->
-                <Border Grid.Column="2"
-                        Background="#E8F5E9"
-                        Padding="20"
-                        Margin="0,0,0,0"
-                        CornerRadius="4">
-                    <StackPanel>
-                        <TextBlock Text="Выполнено за месяц"
-                                 FontSize="14"
-                                 Foreground="#388E3C"/>
-                        <TextBlock x:Name="CompletedRequestsBlock"
-                                 Text="48"
-                                 FontSize="24"
-                                 FontWeight="Medium"
-                                 Foreground="#388E3C"
-                                 Margin="0,5,0,0"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
+            <ListView x:Name="StatusStatsList"
+                     BorderThickness="0"
+                     Background="Transparent"
+                     MaxHeight="300">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Status}"
+                                     Width="200"/>
+                            <TextBlock Text="{Binding Count}"
+                                     FontWeight="Medium"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!-- Статистика по приоритетам -->
+            <TextBlock Text="Статистика по приоритетам"
+                     FontSize="20"
+                     FontWeight="Medium"
+                     Margin="0,20"/>
+
+            <ListView x:Name="PriorityStatsList"
+                     BorderThickness="0"
+                     Background="Transparent"
+                     MaxHeight="300">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Priority}"
+                                     Width="200"/>
+                            <TextBlock Text="{Binding Count}"
+                                     FontWeight="Medium"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!-- Топ исполнителей -->
+            <TextBlock Text="Топ исполнителей"
+                     FontSize="20"
+                     FontWeight="Medium"
+                     Margin="0,20"/>
+
+            <ListView x:Name="TopExecutorsList"
+                     BorderThickness="0"
+                     Background="Transparent"
+                     MaxHeight="300">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}"
+                                     Width="200"/>
+                            <TextBlock>
+                                <Run Text="{Binding CompletedCount}"/>
+                                <Run Text=" выполнено"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
             <!-- Среднее время выполнения -->
-            <TextBlock Text="Среднее время выполнения"
+            <TextBlock Text="Среднее время выполнения заявок"
                      FontSize="20"
                      FontWeight="Medium"
-                     Margin="0,30,0,20"/>
+                     Margin="0,20"/>
 
-            <Border Background="#FAFAFA"
-                    BorderThickness="1"
-                    BorderBrush="#E0E0E0"
-                    CornerRadius="4"
-                    Padding="20"
-                    Margin="0,0,0,30">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- Низкий приоритет -->
-                    <StackPanel>
-                        <TextBlock Text="Низкий приоритет"
-                                 FontSize="14"
-                                 Foreground="#757575"/>
-                        <TextBlock x:Name="LowPriorityTimeBlock"
-                                 Text="2 дня 4 часа"
-                                 FontSize="20"
-                                 FontWeight="Medium"
-                                 Margin="0,5,0,0"/>
-                    </StackPanel>
-
-                    <!-- Средний приоритет -->
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Text="Средний приоритет"
-                                 FontSize="14"
-                                 Foreground="#757575"/>
-                        <TextBlock x:Name="MediumPriorityTimeBlock"
-                                 Text="1 день 6 часов"
-                                 FontSize="20"
-                                 FontWeight="Medium"
-                                 Margin="0,5,0,0"/>
-                    </StackPanel>
-
-                    <!-- Высокий приоритет -->
-                    <StackPanel Grid.Column="2">
-                        <TextBlock Text="Высокий приоритет"
-                                 FontSize="14"
-                                 Foreground="#757575"/>
-                        <TextBlock x:Name="HighPriorityTimeBlock"
-                                 Text="12 часов"
-                                 FontSize="20"
-                                 FontWeight="Medium"
-                                 Margin="0,5,0,0"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- Статистика по исполнителям -->
-            <TextBlock Text="Статистика по исполнителям"
-                     FontSize="20"
-                     FontWeight="Medium"
-                     Margin="0,0,0,20"/>
-
-            <Border BorderThickness="1"
-                    BorderBrush="#E0E0E0"
-                    Background="White"
-                    CornerRadius="4">
-                <ListView x:Name="ExecutorsList"
-                         BorderThickness="0"
-                         Background="Transparent"
-                         HorizontalContentAlignment="Stretch">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="15"
-                                    Background="Transparent"
-                                    BorderThickness="0,0,0,1"
-                                    BorderBrush="#E0E0E0"
-                                    HorizontalAlignment="Stretch">
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBlock Text="{Binding Name}"
-                                             FontSize="16"/>
-                                    <TextBlock Grid.Column="1"
-                                             Text="{Binding ActiveRequests}"
-                                             Foreground="#F57C00"
-                                             Margin="20,0"/>
-                                    <TextBlock Grid.Column="2"
-                                             Text="{Binding CompletedRequests}"
-                                             Foreground="#388E3C"/>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Border>
+            <TextBlock x:Name="AverageCompletionTime"
+                     Text="0 часов"
+                     FontSize="16"
+                     Margin="0,10"/>
         </StackPanel>
     </ScrollViewer>
 </Page>

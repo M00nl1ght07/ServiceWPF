@@ -2,400 +2,156 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-
-
-using System.Threading.Tasks;
-
-
-
+using System.Data.SqlClient;
 using System.Windows;
-
-
-
 using System.Windows.Controls;
-
-
-
 using System.Windows.Data;
-
-
-
 using System.Windows.Documents;
-
-
-
 using System.Windows.Input;
-
-
-
 using System.Windows.Media;
-
-
-
 using System.Windows.Media.Imaging;
-
-
-
 using System.Windows.Navigation;
-
-
-
 using System.Windows.Shapes;
 
-
-
-
-
-
-
 namespace ServiceWPF
-
-
-
 {
-
-
-
     /// <summary>
-
-
-
     /// Логика взаимодействия для UsersPage.xaml
-
-
-
     /// </summary>
-
-
-
-    public class User
-
-
-
-    {
-
-
-
-        public string FullName { get; set; }
-
-
-
-        public string Email { get; set; }
-
-
-
-        public string Role { get; set; }
-
-
-
-    }
-
-
-
-
-
-
-
     public partial class UsersPage : Page
-
-
-
     {
-
-
+        private List<UserInfo> _allUsers;
 
         public UsersPage()
-
-
-
         {
-
-
-
             InitializeComponent();
-
-
-
             LoadUsers();
-
-
-
         }
-
-
-
-
-
-
 
         private void LoadUsers()
-
-
-
         {
-
-
-
-            // Временные данные, пока нет БД
-
-
-
-            var users = new[]
-
-
-
+            try
             {
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+                    var query = @"SELECT 
+                                U.UserID,
+                                U.Login,
+                                U.LastName,
+                                U.FirstName,
+                                U.MiddleName,
+                                U.Email,
+                                R.Name as RoleName
+                                FROM Users U
+                                JOIN Roles R ON U.RoleID = R.RoleID
+                                WHERE U.IsActive = 1
+                                ORDER BY U.LastName, U.FirstName";
 
-
-
-                new User {
-
-
-
-                    FullName = "Иванов Иван Иванович",
-
-
-
-                    Email = "ivanov@mail.ru",
-
-
-
-                    Role = "Исполнитель"
-
-
-
-                },
-
-
-
-                new User {
-
-
-
-                    FullName = "Петров Петр Петрович",
-
-
-
-                    Email = "petrov@mail.ru",
-
-
-
-                    Role = "Исполнитель"
-
-
-
-                },
-
-
-
-                new User {
-
-
-
-                    FullName = "Сидоров Сидор Сидорович",
-
-
-
-                    Email = "sidorov@mail.ru",
-
-
-
-                    Role = "Пользователь"
-
-
-
-                },
-
-
-
-                new User {
-
-
-
-                    FullName = "Администратор",
-
-
-
-                    Email = "admin@mail.ru",
-
-
-
-                    Role = "Администратор"
-
-
-
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            _allUsers = new List<UserInfo>();
+                            while (reader.Read())
+                            {
+                                _allUsers.Add(new UserInfo
+                                {
+                                    UserID = reader.GetInt32(0),
+                                    Login = reader.GetString(1),
+                                    FullName = $"{reader.GetString(2)} {reader.GetString(3)} {(reader.IsDBNull(4) ? "" : reader.GetString(4))}",
+                                    Email = reader.GetString(5),
+                                    Role = reader.GetString(6)
+                                });
+                            }
+                            ApplySearch();
+                        }
+                    }
                 }
-
-
-
-            };
-
-
-
-
-
-
-
-            UsersList.ItemsSource = users;
-
-
-
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при загрузке пользователей: {ex.Message}", NotificationType.Error);
+            }
         }
 
+        private void ApplySearch()
+        {
+            var searchText = SearchBox.Text.Trim().ToLower();
+            var filteredUsers = string.IsNullOrEmpty(searchText) 
+                ? _allUsers 
+                : _allUsers.Where(u => 
+                    u.FullName.ToLower().Contains(searchText) || 
+                    u.Email.ToLower().Contains(searchText) ||
+                    u.Role.ToLower().Contains(searchText)).ToList();
 
-
-
-
-
+            UsersList.ItemsSource = filteredUsers;
+        }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-
-
-
         {
-
-
-
-            // Здесь будет логика поиска
-
-
-
+            ApplySearch();
         }
-
-
-
-
-
-
-
-        private void AddUser_Click(object sender, RoutedEventArgs e)
-
-
-
-        {
-
-
-
-            // Временно, пока нет окна добавления пользователя
-
-
-
-            NotificationManager.Show("Здесь будет открываться окно добавления пользователя", NotificationType.Info);
-
-
-
-        }
-
-
-
-
-
-
 
         private void EditUser_Click(object sender, RoutedEventArgs e)
-
-
-
         {
-
-
-
-            if (sender is Button button && button.Tag != null)
-
-
-
+            if (sender is Button button && button.Tag is UserInfo user)
             {
-
-
-
-                var user = button.Tag as User;
-
-
-
-                // Временно, пока нет окна редактирования
-
-
-
-                NotificationManager.Show($"Здесь будет открываться окно редактирования пользователя: {user.FullName}", NotificationType.Info);
-
-
-
+                // TODO: Добавить редактирование пользователя
+                NotificationManager.Show("Функция редактирования пользователя будет доступна позже", NotificationType.Info);
             }
-
-
-
         }
-
-
-
-
-
-
 
         private void DeleteUser_Click(object sender, RoutedEventArgs e)
-
-
-
         {
-
-
-
-            if (sender is Button button && button.Tag != null)
-
-
-
+            if (sender is Button button && button.Tag is UserInfo user)
             {
-
-
-
-                var user = button.Tag as User;
-
-
-
-                var result = MessageBox.Show($"Вы уверены, что хотите удалить пользователя: {user.FullName}?",
-
-
-
-                    "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-
-
-
-
-
+                var result = MessageBox.Show(
+                    $"Вы уверены, что хотите удалить пользователя {user.FullName}?",
+                    "Подтверждение удаления",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
 
                 if (result == MessageBoxResult.Yes)
-
-
-
                 {
-
-
-
-                    NotificationManager.Show("Пользователь удален", NotificationType.Success);
-
-
-
-                    LoadUsers();
-
-
-
+                    try
+                    {
+                        using (var connection = DatabaseManager.GetConnection())
+                        {
+                            connection.Open();
+                            // Вместо физического удаления, помечаем пользователя как неактивного
+                            var query = "UPDATE Users SET IsActive = 0 WHERE UserID = @UserID";
+                            using (var command = new SqlCommand(query, connection))
+                            {
+                                command.Parameters.AddWithValue("@UserID", user.UserID);
+                                command.ExecuteNonQuery();
+                                NotificationManager.Show("Пользователь успешно удален", NotificationType.Success);
+                                LoadUsers(); // Перезагружаем список
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        NotificationManager.Show($"Ошибка при удалении пользователя: {ex.Message}", NotificationType.Error);
+                    }
                 }
-
-
-
             }
-
-
-
         }
 
-
-
+        private void AddUser_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Добавить создание пользователя
+            NotificationManager.Show("Функция добавления пользователя будет доступна позже", NotificationType.Info);
+        }
     }
 
-
-
+    public class UserInfo
+    {
+        public int UserID { get; set; }
+        public string Login { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; }
+        public string Role { get; set; }
+    }
 }
 

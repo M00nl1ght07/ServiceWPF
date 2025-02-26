@@ -28,7 +28,7 @@ using System.Windows.Shapes;
 
 using ServiceWPF; // Добавляем для NotificationManager
 
-
+using System.Data.SqlClient;
 
 namespace ServiceWPF
 
@@ -52,11 +52,15 @@ namespace ServiceWPF
 
         public string CreatedDate { get; set; }
 
+        public string CreatedDateFull { get; set; }
+
         public string Status { get; set; }
 
         public string Priority { get; set; }
 
         public string Executor { get; set; }
+
+        public int? ExecutorID { get; set; }
 
     }
 
@@ -66,17 +70,21 @@ namespace ServiceWPF
 
     {
 
+        private List<AdminRequest> _allRequests;
+
+
+
         public AllRequestsPage()
 
         {
 
             InitializeComponent();
 
-            LoadAllRequests();
-
             StatusFilter.SelectedIndex = 0;
 
             ExecutorFilter.SelectedIndex = 0;
+
+            LoadAllRequests();
 
         }
 
@@ -86,59 +94,271 @@ namespace ServiceWPF
 
         {
 
-            // Временные данные, пока нет БД
-
-            var requests = new[]
+            try
 
             {
 
-                new AdminRequest {
+                using (var connection = DatabaseManager.GetConnection())
 
-                    Title = "Настройка сети",
+                {
 
-                    Description = "Необходимо настроить сетевое подключение на новых компьютерах в кабинете 301.",
+                    connection.Open();
 
-                    CreatedDate = "16.03.2024",
+                    var query = @"SELECT 
 
-                    Status = "В работе",
+                                R.RequestID,
 
-                    Executor = "Иванов И.И."
+                                R.Title,
 
-                },
+                                R.Description,
 
-                new AdminRequest {
+                                FORMAT(R.CreatedDate, 'dd.MM.yyyy') as CreatedDateDisplay,
 
-                    Title = "Установка антивируса",
+                                FORMAT(R.CreatedDate, 'dd.MM.yyyy HH:mm:ss') as CreatedDateFull,
 
-                    Description = "Требуется установить корпоративный антивирус на компьютеры отдела продаж.",
+                                S.Name as Status,
 
-                    CreatedDate = "16.03.2024",
+                                P.Name as Priority,
 
-                    Status = "Новая",
+                                CASE 
 
-                    Executor = "Не назначен"
+                                    WHEN E.UserID IS NULL THEN 'Не назначен'
 
-                },
+                                    ELSE CONCAT(E.LastName, ' ', LEFT(E.FirstName, 1), '.', 
 
-                new AdminRequest {
+                                        CASE WHEN E.MiddleName IS NOT NULL 
 
-                    Title = "Замена картриджа",
+                                        THEN CONCAT(LEFT(E.MiddleName, 1), '.') 
 
-                    Description = "Замена картриджа в принтере HP кабинета 405.",
+                                        ELSE '' END)
 
-                    CreatedDate = "15.03.2024",
+                                END as Executor,
 
-                    Status = "Завершена",
+                                E.UserID as ExecutorID
 
-                    Executor = "Петров П.П."
+                                FROM Requests R
+
+                                JOIN RequestStatuses S ON R.StatusID = S.StatusID
+
+                                JOIN RequestPriorities P ON R.PriorityID = P.PriorityID
+
+                                LEFT JOIN Users E ON R.ExecutorID = E.UserID
+
+                                ORDER BY R.CreatedDate DESC";
+
+
+
+                    using (var command = new SqlCommand(query, connection))
+
+                    {
+
+                        using (var reader = command.ExecuteReader())
+
+                        {
+
+                            _allRequests = new List<AdminRequest>();
+
+                            while (reader.Read())
+
+                            {
+
+                                _allRequests.Add(new AdminRequest
+
+                                {
+
+                                    RequestID = reader.GetInt32(0),
+
+                                    Title = reader.GetString(1),
+
+                                    Description = reader.GetString(2),
+
+                                    CreatedDate = reader.GetString(3),
+
+                                    CreatedDateFull = reader.GetString(4),
+
+                                    Status = reader.GetString(5),
+
+                                    Priority = reader.GetString(6),
+
+                                    Executor = reader.GetString(7),
+
+                                    ExecutorID = reader.IsDBNull(8) ? null : (int?)reader.GetInt32(8)
+
+                                });
+
+                            }
+
+                            ApplyFilters();
+
+                        }
+
+                    }
+
+
+
+                    // Загружаем список исполнителей для фильтра
+
+                    LoadExecutors();
 
                 }
 
-            };
+            }
+
+            catch (Exception ex)
+
+            {
+
+                NotificationManager.Show($"Ошибка при загрузке заявок: {ex.Message}", NotificationType.Error);
+
+            }
+
+        }
 
 
 
-            RequestsList.ItemsSource = requests;
+        private void LoadExecutors()
+
+        {
+
+            try
+
+            {
+
+                using (var connection = DatabaseManager.GetConnection())
+
+                {
+
+                    connection.Open();
+
+                    var query = @"SELECT DISTINCT 
+
+                                U.UserID,
+
+                                CONCAT(U.LastName, ' ', LEFT(U.FirstName, 1), '.', 
+
+                                    CASE WHEN U.MiddleName IS NOT NULL 
+
+                                    THEN CONCAT(LEFT(U.MiddleName, 1), '.') 
+
+                                    ELSE '' END) as ExecutorName
+
+                                FROM Users U
+
+                                JOIN UserRoles UR ON U.UserID = UR.UserID
+
+                                WHERE UR.RoleID = 2 -- ID роли исполнителя
+
+                                ORDER BY ExecutorName";
+
+
+
+                    using (var command = new SqlCommand(query, connection))
+
+                    {
+
+                        using (var reader = command.ExecuteReader())
+
+                        {
+
+                            ExecutorFilter.Items.Clear();
+
+                            ExecutorFilter.Items.Add(new ComboBoxItem { Content = "Все исполнители" });
+
+                            
+
+                            while (reader.Read())
+
+                            {
+
+                                ExecutorFilter.Items.Add(new ComboBoxItem 
+
+                                { 
+
+                                    Content = reader.GetString(1),
+
+                                    Tag = reader.GetInt32(0)
+
+                                });
+
+                            }
+
+                        }
+
+                    }
+
+                    ExecutorFilter.SelectedIndex = 0;
+
+                }
+
+            }
+
+            catch (Exception ex)
+
+            {
+
+                NotificationManager.Show($"Ошибка при загрузке списка исполнителей: {ex.Message}", NotificationType.Error);
+
+            }
+
+        }
+
+
+
+        private void ApplyFilters()
+
+        {
+
+            var filteredRequests = _allRequests;
+
+
+
+            // Поиск
+
+            var searchText = SearchBox.Text.Trim().ToLower();
+
+            if (!string.IsNullOrEmpty(searchText))
+
+            {
+
+                filteredRequests = filteredRequests.Where(r => 
+
+                    r.Title.ToLower().Contains(searchText) || 
+
+                    r.Description.ToLower().Contains(searchText)).ToList();
+
+            }
+
+
+
+            // Фильтр по статусу
+
+            if (StatusFilter.SelectedIndex > 0)
+
+            {
+
+                var selectedStatus = (StatusFilter.SelectedItem as ComboBoxItem).Content.ToString();
+
+                filteredRequests = filteredRequests.Where(r => r.Status == selectedStatus).ToList();
+
+            }
+
+
+
+            // Фильтр по исполнителю
+
+            if (ExecutorFilter.SelectedIndex > 0)
+
+            {
+
+                var selectedExecutor = (ExecutorFilter.SelectedItem as ComboBoxItem).Content.ToString();
+
+                filteredRequests = filteredRequests.Where(r => r.Executor == selectedExecutor).ToList();
+
+            }
+
+
+
+            RequestsList.ItemsSource = filteredRequests;
 
         }
 
@@ -148,7 +368,7 @@ namespace ServiceWPF
 
         {
 
-            // Здесь будет логика поиска
+            ApplyFilters();
 
         }
 
@@ -158,7 +378,7 @@ namespace ServiceWPF
 
         {
 
-            // Здесь будет логика фильтрации по статусу
+            if (IsLoaded) ApplyFilters();
 
         }
 
@@ -168,7 +388,7 @@ namespace ServiceWPF
 
         {
 
-            // Здесь будет логика фильтрации по исполнителю
+            if (IsLoaded) ApplyFilters();
 
         }
 
