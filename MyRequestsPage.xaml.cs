@@ -83,7 +83,6 @@ namespace ServiceWPF
                 }
             };
 
-            RequestsList.ItemsSource = requests;
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -103,11 +102,6 @@ namespace ServiceWPF
 
         private void RequestsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (RequestsList.SelectedItem != null)
-            {
-                NavigationService?.Navigate(new RequestDetailsPage());
-                RequestsList.SelectedItem = null;
-            }
         }
     }
 }

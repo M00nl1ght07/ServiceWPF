@@ -102,12 +102,6 @@ namespace ServiceWPF
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(UsernameTextBox.Text) || string.IsNullOrWhiteSpace(PasswordBox.Password))
-            {
-                NotificationManager.Show("Заполните все поля", NotificationType.Warning);
-                return;
-            }
-
             try
             {
                 using (var connection = DatabaseManager.GetConnection())
@@ -119,21 +113,22 @@ namespace ServiceWPF
 
                     using (var command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@Login", UsernameTextBox.Text);
+                        command.Parameters.AddWithValue("@Login", UsernameTextBox.Text.Trim());
                         command.Parameters.AddWithValue("@PasswordHash", HashPassword(PasswordBox.Password));
 
                         using (var reader = command.ExecuteReader())
                         {
                             if (reader.Read())
                             {
+                                var roleId = reader.GetInt32(0);
                                 var isActive = reader.GetBoolean(1);
+                                
                                 if (!isActive)
                                 {
-                                    NotificationManager.Show("Аккаунт заблокирован", NotificationType.Error);
+                                    NotificationManager.Show("Ваша учетная запись отключена", NotificationType.Error);
                                     return;
                                 }
 
-                                var roleId = reader.GetInt32(0);
                                 string userRole;
                                 switch (roleId)
                                 {
@@ -152,9 +147,12 @@ namespace ServiceWPF
                                 var lastName = reader.GetString(3);
                                 var fullName = $"{firstName} {lastName}";
 
-                                var mainWindow = new MainWindow(userRole);
+                                var mainWindow = new MainWindow(userRole, UsernameTextBox.Text.Trim());
                                 mainWindow.UserNameText.Text = fullName;
                                 mainWindow.Show();
+                                
+                                Application.Current.MainWindow = mainWindow;
+                                
                                 this.Close();
                             }
                             else

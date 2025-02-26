@@ -1,6 +1,3 @@
-C:\Users\igris\source\repos\ServiceWPF\bin\Debug\ServiceWPF.exe.config
-C:\Users\igris\source\repos\ServiceWPF\bin\Debug\ServiceWPF.exe
-C:\Users\igris\source\repos\ServiceWPF\bin\Debug\ServiceWPF.pdb
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF.csproj.AssemblyReference.cache
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ActiveRequestsPage.baml
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\AllRequestsPage.baml
@@ -25,6 +22,9 @@ C:\Users\igris\source\repos\ServiceWPF\obj\Debug\UsersPage.g.cs
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\App.g.cs
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF_MarkupCompile.cache
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF_MarkupCompile.lref
+C:\Users\igris\source\repos\ServiceWPF\bin\Debug\ServiceWPF.exe.config
+C:\Users\igris\source\repos\ServiceWPF\bin\Debug\ServiceWPF.exe
+C:\Users\igris\source\repos\ServiceWPF\bin\Debug\ServiceWPF.pdb
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\CreateRequestPage.baml
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\MainWindow.baml
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF.g.resources

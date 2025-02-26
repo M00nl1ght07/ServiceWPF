@@ -21,11 +21,14 @@ namespace ServiceWPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(string userRole = "user")
+        public string CurrentUserLogin { get; private set; }
+
+        public MainWindow(string userRole = "user", string userLogin = null)
         {
             InitializeComponent();
             NotificationManager.Initialize(this);
             DatabaseManager.TestConnection();
+            CurrentUserLogin = userLogin;
             ConfigureForRole(userRole);
             
             // Загружаем начальную страницу в зависимости от роли
