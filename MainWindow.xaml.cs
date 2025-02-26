@@ -25,6 +25,7 @@ namespace ServiceWPF
         {
             InitializeComponent();
             NotificationManager.Initialize(this);
+            DatabaseManager.TestConnection(); // Проверяем подключение к БД
             ConfigureForRole(userRole);
             
             // Загружаем начальную страницу

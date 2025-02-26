@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\databasemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:databasemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\statisticspage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:statisticspage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
@@ -46,11 +50,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
+              "Title": "DatabaseManager.cs",
+              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\DatabaseManager.cs",
+              "RelativeDocumentMoniker": "DatabaseManager.cs",
+              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\DatabaseManager.cs",
+              "RelativeToolTip": "DatabaseManager.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAEIAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-26T09:06:36.714Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "NotificationManager.cs",
               "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\NotificationManager.cs",
               "RelativeDocumentMoniker": "NotificationManager.cs",
@@ -62,7 +79,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "AvailableRequestsPage.xaml.cs",
               "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AvailableRequestsPage.xaml.cs",
               "RelativeDocumentMoniker": "AvailableRequestsPage.xaml.cs",
@@ -74,7 +91,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "StatisticsPage.xaml.cs",
               "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\StatisticsPage.xaml.cs",
               "RelativeDocumentMoniker": "StatisticsPage.xaml.cs",
@@ -86,7 +103,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "StatisticsPage.xaml",
               "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\StatisticsPage.xaml",
               "RelativeDocumentMoniker": "StatisticsPage.xaml",
@@ -98,7 +115,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "UsersPage.xaml",
               "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\UsersPage.xaml",
               "RelativeDocumentMoniker": "UsersPage.xaml",
@@ -109,7 +126,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "AllRequestsPage.xaml.cs",
               "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml.cs",
               "RelativeDocumentMoniker": "AllRequestsPage.xaml.cs",
@@ -121,7 +138,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "CreateRequestPage.xaml.cs",
               "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\CreateRequestPage.xaml.cs",
               "RelativeDocumentMoniker": "CreateRequestPage.xaml.cs",
@@ -133,7 +150,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "AllRequestsPage.xaml",
               "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml",
               "RelativeDocumentMoniker": "AllRequestsPage.xaml",
@@ -144,7 +161,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",
