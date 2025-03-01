@@ -27,7 +27,6 @@ namespace ServiceWPF
         {
             InitializeComponent();
             NotificationManager.Initialize(this);
-            DatabaseManager.TestConnection();
             CurrentUserLogin = userLogin;
             ConfigureForRole(userRole);
             
