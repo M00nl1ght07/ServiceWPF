@@ -50,7 +50,6 @@ namespace ServiceWPF
 
         private void ConfigureForRole(string role)
         {
-            // Здесь будет настройка интерфейса под конкретную роль
             switch (role.ToLower())
             {
                 case "admin":
