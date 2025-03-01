@@ -140,12 +140,12 @@ namespace ServiceWPF
             }
         }
 
-        private void StatusChanged(object sender, SelectionChangedEventArgs e)
+        private void StatusComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is ComboBox comboBox && comboBox.Tag != null)
             {
-                var request = comboBox.Tag as ActiveRequest;
-                var newStatus = (comboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                var requestId = (int)comboBox.Tag;
+                var newStatus = ((ComboBoxItem)comboBox.SelectedItem).Content.ToString();
 
                 try
                 {
@@ -157,20 +157,32 @@ namespace ServiceWPF
                             try
                             {
                                 // Получаем ID нового статуса
-                                int newStatusId;
                                 var statusQuery = "SELECT StatusID FROM RequestStatuses WHERE Name = @StatusName";
+                                int statusId;
                                 using (var command = new SqlCommand(statusQuery, connection, transaction))
                                 {
                                     command.Parameters.AddWithValue("@StatusName", newStatus);
-                                    var result = command.ExecuteScalar();
-                                    if (result == null)
-                                    {
-                                        throw new Exception($"Статус '{newStatus}' не найден");
-                                    }
-                                    newStatusId = (int)result;
+                                    statusId = (int)command.ExecuteScalar();
                                 }
 
-                                // Получаем ID текущего пользователя
+                                // Обновляем статус заявки
+                                var updateQuery = @"UPDATE Requests 
+                                                SET StatusID = @StatusID,
+                                                    LastModifiedDate = GETDATE(),
+                                                    CompletionDate = CASE WHEN @StatusName = N'Завершена' 
+                                                                   THEN GETDATE() 
+                                                                   ELSE CompletionDate END
+                                                WHERE RequestID = @RequestID";
+
+                                using (var command = new SqlCommand(updateQuery, connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@StatusID", statusId);
+                                    command.Parameters.AddWithValue("@StatusName", newStatus);
+                                    command.Parameters.AddWithValue("@RequestID", requestId);
+                                    command.ExecuteNonQuery();
+                                }
+
+                                // Добавляем запись в историю
                                 var currentUserLogin = "";
                                 if (Application.Current.MainWindow is MainWindow mainWindow)
                                 {
@@ -182,39 +194,18 @@ namespace ServiceWPF
                                 using (var command = new SqlCommand(getUserIdQuery, connection, transaction))
                                 {
                                     command.Parameters.AddWithValue("@Login", currentUserLogin);
-                                    var result = command.ExecuteScalar();
-                                    if (result == null)
-                                    {
-                                        throw new Exception("Пользователь не найден");
-                                    }
-                                    userId = (int)result;
+                                    userId = (int)command.ExecuteScalar();
                                 }
 
-                                // Обновляем статус заявки
-                                var updateQuery = @"UPDATE Requests 
-                                                  SET StatusID = @StatusID,
-                                                      LastModifiedDate = GETDATE(),
-                                                      CompletionDate = CASE WHEN @StatusName = N'Завершена' THEN GETDATE() ELSE CompletionDate END
-                                                  WHERE RequestID = @RequestID";
-
-                                using (var command = new SqlCommand(updateQuery, connection, transaction))
-                                {
-                                    command.Parameters.AddWithValue("@StatusID", newStatusId);
-                                    command.Parameters.AddWithValue("@StatusName", newStatus);
-                                    command.Parameters.AddWithValue("@RequestID", request.RequestID);
-                                    command.ExecuteNonQuery();
-                                }
-
-                                // Добавляем запись в историю
                                 var historyQuery = @"INSERT INTO RequestHistory 
-                                                   (RequestID, StatusID, ChangedByUserID, ChangeDate, Comment)
-                                                   VALUES 
-                                                   (@RequestID, @StatusID, @UserID, GETDATE(), @Comment)";
+                                                 (RequestID, StatusID, ChangedByUserID, ChangeDate, Comment)
+                                                 VALUES 
+                                                 (@RequestID, @StatusID, @UserID, GETDATE(), @Comment)";
 
                                 using (var command = new SqlCommand(historyQuery, connection, transaction))
                                 {
-                                    command.Parameters.AddWithValue("@RequestID", request.RequestID);
-                                    command.Parameters.AddWithValue("@StatusID", newStatusId);
+                                    command.Parameters.AddWithValue("@RequestID", requestId);
+                                    command.Parameters.AddWithValue("@StatusID", statusId);
                                     command.Parameters.AddWithValue("@UserID", userId);
                                     command.Parameters.AddWithValue("@Comment", $"Статус изменен на '{newStatus}'");
                                     command.ExecuteNonQuery();
