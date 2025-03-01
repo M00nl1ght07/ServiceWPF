@@ -37,21 +37,20 @@
                      FontWeight="Medium"
                      Margin="0,20"/>
 
-            <ListView x:Name="StatusStatsList"
-                     BorderThickness="0"
-                     Background="Transparent"
-                     MaxHeight="300">
-                <ListView.ItemTemplate>
+            <ItemsControl x:Name="StatusStatsList"
+                         BorderThickness="0"
+                         Background="Transparent">
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
                             <TextBlock Text="{Binding Status}"
                                      Width="200"/>
                             <TextBlock Text="{Binding Count}"
                                      FontWeight="Medium"/>
                         </StackPanel>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
             <!-- Статистика по приоритетам -->
             <TextBlock Text="Статистика по приоритетам"
@@ -59,21 +58,20 @@
                      FontWeight="Medium"
                      Margin="0,20"/>
 
-            <ListView x:Name="PriorityStatsList"
-                     BorderThickness="0"
-                     Background="Transparent"
-                     MaxHeight="300">
-                <ListView.ItemTemplate>
+            <ItemsControl x:Name="PriorityStatsList"
+                         BorderThickness="0"
+                         Background="Transparent">
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
                             <TextBlock Text="{Binding Priority}"
                                      Width="200"/>
                             <TextBlock Text="{Binding Count}"
                                      FontWeight="Medium"/>
                         </StackPanel>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
             <!-- Топ исполнителей -->
             <TextBlock Text="Топ исполнителей"
@@ -81,13 +79,12 @@
                      FontWeight="Medium"
                      Margin="0,20"/>
 
-            <ListView x:Name="TopExecutorsList"
-                     BorderThickness="0"
-                     Background="Transparent"
-                     MaxHeight="300">
-                <ListView.ItemTemplate>
+            <ItemsControl x:Name="TopExecutorsList"
+                         BorderThickness="0"
+                         Background="Transparent">
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
                             <TextBlock Text="{Binding Name}"
                                      Width="200"/>
                             <TextBlock>
@@ -96,8 +93,8 @@
                             </TextBlock>
                         </StackPanel>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
             <!-- Среднее время выполнения -->
             <TextBlock Text="Среднее время выполнения заявок"

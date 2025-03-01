@@ -105,104 +105,101 @@
             </Grid.ColumnDefinitions>
 
             <!-- История изменений -->
-            <StackPanel Margin="0,0,20,0">
+            <DockPanel Margin="0,0,20,0">
                 <TextBlock Text="История изменений"
                          FontSize="16"
                          FontWeight="Medium"
-                         Margin="0,0,0,15"/>
-                <ListView x:Name="HistoryList" 
-                         BorderThickness="0"
-                         Background="Transparent">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Padding" Value="0"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                </Trigger>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#F5F5F5"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="12"
-                                    BorderThickness="0,0,0,1"
-                                    BorderBrush="#E0E0E0">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Comment}"
-                                             TextWrapping="Wrap"/>
-                                    <StackPanel Orientation="Horizontal"
-                                              Margin="0,5,0,0">
-                                        <TextBlock Text="{Binding ChangeDate}"
-                                                 Foreground="#757575"/>
-                                        <TextBlock Text=" • "
-                                                 Foreground="#757575"
-                                                 Margin="5,0"/>
-                                        <TextBlock Text="{Binding ChangedBy}"
-                                                 Foreground="#2196F3"/>
+                         Margin="0,0,0,15"
+                         DockPanel.Dock="Top"/>
+                
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl x:Name="HistoryList" 
+                                 BorderThickness="0"
+                                 Background="Transparent">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="12"
+                                        BorderThickness="0,0,0,1"
+                                        BorderBrush="#E0E0E0"
+                                        Background="Transparent">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Comment}"
+                                                 TextWrapping="Wrap"/>
+                                        <StackPanel Orientation="Horizontal"
+                                                  Margin="0,5,0,0">
+                                            <TextBlock Text="{Binding ChangeDate}"
+                                                     Foreground="#757575"/>
+                                            <TextBlock Text=" • "
+                                                     Foreground="#757575"
+                                                     Margin="5,0"/>
+                                            <TextBlock Text="{Binding ChangedBy}"
+                                                     Foreground="#2196F3"/>
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
 
             <!-- Комментарии -->
-            <StackPanel Grid.Column="1">
+            <DockPanel Grid.Column="1">
                 <TextBlock Text="Комментарии"
                          FontSize="16"
                          FontWeight="Medium"
-                         Margin="0,0,0,15"/>
+                         Margin="0,0,0,15"
+                         DockPanel.Dock="Top"/>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,15,0,0">
+                    <!-- Добавление комментария -->
+                    <Border Background="White"
+                            BorderThickness="1"
+                            BorderBrush="#E0E0E0"
+                            CornerRadius="4">
+                        <TextBox x:Name="CommentBox"
+                                BorderThickness="0"
+                                Padding="12"
+                                Background="Transparent"
+                                TextWrapping="Wrap"
+                                AcceptsReturn="True"
+                                Height="80"
+                                VerticalScrollBarVisibility="Auto"/>
+                    </Border>
+                    <Button Content="Добавить комментарий"
+                            Height="35"
+                            Width="200"
+                            HorizontalAlignment="Right"
+                            Margin="0,10,0,0"
+                            Click="AddComment_Click"/>
+                </StackPanel>
 
                 <!-- Список комментариев -->
-                <ItemsControl x:Name="CommentsList"
-                            Margin="0,0,0,20">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderThickness="0,0,0,1"
-                                    BorderBrush="#E0E0E0"
-                                    Padding="0,15">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Author}"
-                                             FontWeight="Medium"/>
-                                    <TextBlock Text="{Binding Text}"
-                                             TextWrapping="Wrap"
-                                             Margin="0,5"/>
-                                    <TextBlock Text="{Binding Date}"
-                                             Foreground="#757575"/>
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <!-- Добавление комментария -->
-                <Border Background="White"
-                        BorderThickness="1"
-                        BorderBrush="#E0E0E0"
-                        CornerRadius="4">
-                    <TextBox x:Name="CommentBox"
-                            BorderThickness="0"
-                            Padding="12"
-                            Background="Transparent"
-                            TextWrapping="Wrap"
-                            AcceptsReturn="True"
-                            Height="80"
-                            VerticalScrollBarVisibility="Auto"/>
-                </Border>
-                <Button Content="Добавить комментарий"
-                        Height="35"
-                        Width="200"
-                        HorizontalAlignment="Right"
-                        Margin="0,10,0,0"
-                        Click="AddComment_Click"/>
-            </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl x:Name="CommentsList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderThickness="0,0,0,1"
+                                        BorderBrush="#E0E0E0"
+                                        Padding="12,15"
+                                        Background="Transparent">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Author}"
+                                                 FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding Text}"
+                                                 TextWrapping="Wrap"
+                                                 Margin="0,5"/>
+                                        <TextBlock Text="{Binding Date}"
+                                                 Foreground="#757575"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
         </Grid>
     </Grid>
 </Page>
