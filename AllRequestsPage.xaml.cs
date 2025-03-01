@@ -442,21 +442,185 @@ namespace ServiceWPF
 
                 var request = button.Tag as AdminRequest;
 
-                var result = MessageBox.Show($"Вы уверены, что хотите отменить заявку: {request.Title}?",
+                var dialogResult = MessageBox.Show($"Вы уверены, что хотите отменить заявку: {request.Title}?",
 
                     "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
 
 
-                if (result == MessageBoxResult.Yes)
+                if (dialogResult == MessageBoxResult.Yes)
 
                 {
 
-                    // Временно, пока нет БД
+                    try
 
-                    NotificationManager.Show("Заявка отменена", NotificationType.Success);
+                    {
 
-                    LoadAllRequests(); // Перезагружаем список
+                        using (var connection = DatabaseManager.GetConnection())
+
+                        {
+
+                            connection.Open();
+
+                            using (var transaction = connection.BeginTransaction())
+
+                            {
+
+                                try
+
+                                {
+
+                                    // Получаем ID статуса "Отменена"
+
+                                    int cancelStatusId;
+
+                                    var statusQuery = "SELECT StatusID FROM RequestStatuses WHERE Name = N'Отменена'";
+
+                                    using (var command = new SqlCommand(statusQuery, connection, transaction))
+
+                                    {
+
+                                        var statusResult = command.ExecuteScalar();
+
+                                        if (statusResult == null)
+
+                                        {
+
+                                            throw new Exception("Статус 'Отменена' не найден в базе данных");
+
+                                        }
+
+                                        cancelStatusId = (int)statusResult;
+
+                                    }
+
+
+
+                                    // Обновляем статус заявки
+
+                                    var updateQuery = @"UPDATE Requests 
+
+                                                      SET StatusID = @StatusID, 
+
+                                                          LastModifiedDate = GETDATE()
+
+                                                      WHERE RequestID = @RequestID";
+
+
+
+                                    using (var command = new SqlCommand(updateQuery, connection, transaction))
+
+                                    {
+
+                                        command.Parameters.AddWithValue("@StatusID", cancelStatusId);
+
+                                        command.Parameters.AddWithValue("@RequestID", request.RequestID);
+
+                                        command.ExecuteNonQuery();
+
+                                    }
+
+
+
+                                    // Получаем ID текущего пользователя
+
+                                    var currentUserLogin = "";
+
+                                    if (Application.Current.MainWindow is MainWindow mainWindow)
+
+                                    {
+
+                                        currentUserLogin = mainWindow.CurrentUserLogin;
+
+                                    }
+
+
+
+                                    var getUserIdQuery = "SELECT UserID FROM Users WHERE Login = @Login";
+
+                                    int userId;
+
+                                    using (var command = new SqlCommand(getUserIdQuery, connection, transaction))
+
+                                    {
+
+                                        command.Parameters.AddWithValue("@Login", currentUserLogin);
+
+                                        var userResult = command.ExecuteScalar();
+
+                                        if (userResult == null)
+
+                                        {
+
+                                            throw new Exception("Пользователь не найден");
+
+                                        }
+
+                                        userId = (int)userResult;
+
+                                    }
+
+
+
+                                    // Добавляем запись в историю
+
+                                    var historyQuery = @"INSERT INTO RequestHistory 
+
+                                                       (RequestID, StatusID, ChangedByUserID, ChangeDate, Comment)
+
+                                                       VALUES 
+
+                                                       (@RequestID, @StatusID, @UserID, GETDATE(), N'Заявка отменена администратором')";
+
+
+
+                                    using (var command = new SqlCommand(historyQuery, connection, transaction))
+
+                                    {
+
+                                        command.Parameters.AddWithValue("@RequestID", request.RequestID);
+
+                                        command.Parameters.AddWithValue("@StatusID", cancelStatusId);
+
+                                        command.Parameters.AddWithValue("@UserID", userId);
+
+                                        command.ExecuteNonQuery();
+
+                                    }
+
+
+
+                                    transaction.Commit();
+
+                                    NotificationManager.Show("Заявка успешно отменена", NotificationType.Success);
+
+                                    LoadAllRequests(); // Перезагружаем список
+
+                                }
+
+                                catch (Exception)
+
+                                {
+
+                                    transaction.Rollback();
+
+                                    throw;
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    catch (Exception ex)
+
+                    {
+
+                        NotificationManager.Show($"Ошибка при отмене заявки: {ex.Message}", NotificationType.Error);
+
+                    }
 
                 }
 
