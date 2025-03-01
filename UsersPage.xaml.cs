@@ -26,6 +26,13 @@ namespace ServiceWPF
         {
             InitializeComponent();
             LoadUsers();
+            // Подписываемся на событие загрузки страницы
+            this.Loaded += UsersPage_Loaded;
+        }
+
+        private void UsersPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadUsers(); // Перезагружаем список при каждой загрузке страницы
         }
 
         private void LoadUsers()
@@ -97,8 +104,7 @@ namespace ServiceWPF
         {
             if (sender is Button button && button.Tag is UserInfo user)
             {
-                // TODO: Добавить редактирование пользователя
-                NotificationManager.Show("Функция редактирования пользователя будет доступна позже", NotificationType.Info);
+                NavigationService?.Navigate(new EditUserWindow(user.UserID));
             }
         }
 
@@ -136,12 +142,6 @@ namespace ServiceWPF
                     }
                 }
             }
-        }
-
-        private void AddUser_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: Добавить создание пользователя
-            NotificationManager.Show("Функция добавления пользователя будет доступна позже", NotificationType.Info);
         }
     }
 

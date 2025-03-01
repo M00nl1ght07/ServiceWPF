@@ -13,7 +13,7 @@
                      Margin="0,0,0,20"/>
 
             <WrapPanel>
-                <!-- Общее количество заявок -->
+                <!-- Всего заявок -->
                 <Border Background="#E3F2FD"
                         Padding="20"
                         CornerRadius="4"
@@ -29,83 +29,145 @@
                                  Margin="0,10,0,0"/>
                     </StackPanel>
                 </Border>
+
+                <!-- Среднее время выполнения -->
+                <Border Background="#E8F5E9"
+                        Padding="20"
+                        CornerRadius="4"
+                        Margin="0,0,20,20"
+                        Width="200">
+                    <StackPanel>
+                        <TextBlock Text="Среднее время"
+                                 FontWeight="Medium"/>
+                        <TextBlock x:Name="AverageCompletionTime"
+                                 Text="0 часов"
+                                 FontSize="24"
+                                 FontWeight="Medium"
+                                 Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
             </WrapPanel>
 
             <!-- Статистика по статусам -->
-            <TextBlock Text="Статистика по статусам"
-                     FontSize="20"
-                     FontWeight="Medium"
-                     Margin="0,20"/>
+            <Border Background="White"
+                    BorderThickness="1"
+                    BorderBrush="#EEEEEE"
+                    CornerRadius="4"
+                    Padding="20"
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Статистика по статусам"
+                             FontSize="20"
+                             FontWeight="Medium"
+                             Margin="0,0,0,15"/>
 
-            <ItemsControl x:Name="StatusStatsList"
-                         BorderThickness="0"
-                         Background="Transparent">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="{Binding Status}"
-                                     Width="200"/>
-                            <TextBlock Text="{Binding Count}"
-                                     FontWeight="Medium"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                    <ItemsControl x:Name="StatusStatsList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#FAFAFA"
+                                        Margin="0,5"
+                                        CornerRadius="4"
+                                        Padding="15,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Status}"
+                                                 VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Count}"
+                                                 Grid.Column="1"
+                                                 FontWeight="Medium"
+                                                 FontSize="16"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
 
             <!-- Статистика по приоритетам -->
-            <TextBlock Text="Статистика по приоритетам"
-                     FontSize="20"
-                     FontWeight="Medium"
-                     Margin="0,20"/>
+            <Border Background="White"
+                    BorderThickness="1"
+                    BorderBrush="#EEEEEE"
+                    CornerRadius="4"
+                    Padding="20"
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Статистика по приоритетам"
+                             FontSize="20"
+                             FontWeight="Medium"
+                             Margin="0,0,0,15"/>
 
-            <ItemsControl x:Name="PriorityStatsList"
-                         BorderThickness="0"
-                         Background="Transparent">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="{Binding Priority}"
-                                     Width="200"/>
-                            <TextBlock Text="{Binding Count}"
-                                     FontWeight="Medium"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                    <ItemsControl x:Name="PriorityStatsList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#FAFAFA"
+                                        Margin="0,5"
+                                        CornerRadius="4"
+                                        Padding="15,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Priority}"
+                                                 VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Count}"
+                                                 Grid.Column="1"
+                                                 FontWeight="Medium"
+                                                 FontSize="16"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
 
             <!-- Топ исполнителей -->
-            <TextBlock Text="Топ исполнителей"
-                     FontSize="20"
-                     FontWeight="Medium"
-                     Margin="0,20"/>
+            <Border Background="White"
+                    BorderThickness="1"
+                    BorderBrush="#EEEEEE"
+                    CornerRadius="4"
+                    Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Топ исполнителей"
+                             FontSize="20"
+                             FontWeight="Medium"
+                             Margin="0,0,0,15"/>
 
-            <ItemsControl x:Name="TopExecutorsList"
-                         BorderThickness="0"
-                         Background="Transparent">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="{Binding Name}"
-                                     Width="200"/>
-                            <TextBlock>
-                                <Run Text="{Binding CompletedCount}"/>
-                                <Run Text=" выполнено"/>
-                            </TextBlock>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <!-- Среднее время выполнения -->
-            <TextBlock Text="Среднее время выполнения заявок"
-                     FontSize="20"
-                     FontWeight="Medium"
-                     Margin="0,20"/>
-
-            <TextBlock x:Name="AverageCompletionTime"
-                     Text="0 часов"
-                     FontSize="16"
-                     Margin="0,10"/>
+                    <ItemsControl x:Name="TopExecutorsList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#FAFAFA"
+                                        Margin="0,5"
+                                        CornerRadius="4"
+                                        Padding="15,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}"
+                                                 VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1"
+                                                  Orientation="Horizontal">
+                                            <TextBlock Text="{Binding CompletedCount}"
+                                                     FontWeight="Medium"
+                                                     FontSize="16"/>
+                                            <TextBlock Text=" выполнено"
+                                                     Margin="5,0,0,0"
+                                                     Foreground="#757575"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </Page>

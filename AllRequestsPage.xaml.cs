@@ -80,9 +80,7 @@ namespace ServiceWPF
 
             InitializeComponent();
 
-            StatusFilter.SelectedIndex = 0;
-
-            ExecutorFilter.SelectedIndex = 0;
+            LoadExecutors();
 
             LoadAllRequests();
 
@@ -194,12 +192,6 @@ namespace ServiceWPF
 
                     }
 
-
-
-                    // Загружаем список исполнителей для фильтра
-
-                    LoadExecutors();
-
                 }
 
             }
@@ -230,9 +222,7 @@ namespace ServiceWPF
 
                     connection.Open();
 
-                    var query = @"SELECT DISTINCT 
-
-                                U.UserID,
+                    var query = @"SELECT 
 
                                 CONCAT(U.LastName, ' ', LEFT(U.FirstName, 1), '.', 
 
@@ -244,11 +234,17 @@ namespace ServiceWPF
 
                                 FROM Users U
 
-                                JOIN UserRoles UR ON U.UserID = UR.UserID
+                                WHERE U.RoleID = 2  -- ID роли исполнителя
 
-                                WHERE UR.RoleID = 2 -- ID роли исполнителя
+                                ORDER BY U.LastName, U.FirstName";
 
-                                ORDER BY ExecutorName";
+
+
+                    ExecutorFilter.Items.Clear();
+
+                    ExecutorFilter.Items.Add(new ComboBoxItem { Content = "Все исполнители" });
+
+                    ExecutorFilter.Items.Add(new ComboBoxItem { Content = "Без исполнителя" });
 
 
 
@@ -260,12 +256,6 @@ namespace ServiceWPF
 
                         {
 
-                            ExecutorFilter.Items.Clear();
-
-                            ExecutorFilter.Items.Add(new ComboBoxItem { Content = "Все исполнители" });
-
-                            
-
                             while (reader.Read())
 
                             {
@@ -274,9 +264,7 @@ namespace ServiceWPF
 
                                 { 
 
-                                    Content = reader.GetString(1),
-
-                                    Tag = reader.GetInt32(0)
+                                    Content = reader.GetString(0)
 
                                 });
 
@@ -352,7 +340,21 @@ namespace ServiceWPF
 
                 var selectedExecutor = (ExecutorFilter.SelectedItem as ComboBoxItem).Content.ToString();
 
-                filteredRequests = filteredRequests.Where(r => r.Executor == selectedExecutor).ToList();
+                if (selectedExecutor == "Без исполнителя")
+
+                {
+
+                    filteredRequests = filteredRequests.Where(r => r.Executor == "Не назначен").ToList();
+
+                }
+
+                else
+
+                {
+
+                    filteredRequests = filteredRequests.Where(r => r.Executor == selectedExecutor).ToList();
+
+                }
 
             }
 
@@ -423,11 +425,179 @@ namespace ServiceWPF
             {
 
                 var request = button.Tag as AdminRequest;
+                
+                // Создаем окно выбора исполнителя
+                var window = new Window
+                {
+                    Title = "Назначение исполнителя",
+                    Width = 400,
+                    Height = 500,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Background = Brushes.White,
+                    WindowStyle = WindowStyle.ToolWindow,
+                    ResizeMode = ResizeMode.NoResize
+                };
 
-                NotificationManager.Show($"Исполнитель назначен на заявку: {request.Title}", NotificationType.Success);
+                var panel = new StackPanel { Margin = new Thickness(20) };
+                var title = new TextBlock
+                {
+                    Text = "Выберите исполнителя",
+                    FontSize = 16,
+                    FontWeight = FontWeights.Medium,
+                    Margin = new Thickness(0, 0, 0, 15)
+                };
 
+                var executorsList = new ListView
+                {
+                    Margin = new Thickness(0, 0, 0, 15)
+                };
+
+                // Загружаем список исполнителей
+                try
+                {
+                    using (var connection = DatabaseManager.GetConnection())
+                    {
+                        connection.Open();
+                        var query = @"SELECT U.UserID, 
+                                    CONCAT(U.LastName, ' ', U.FirstName, ' ', ISNULL(U.MiddleName, '')) as FullName
+                            FROM Users U
+                            JOIN UserRoles UR ON U.UserID = UR.UserID
+                            JOIN Roles R ON UR.RoleID = R.RoleID
+                            WHERE R.Name = N'Исполнитель'
+                            ORDER BY U.LastName, U.FirstName";
+
+                        using (var command = new SqlCommand(query, connection))
+                        {
+                            using (var reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    var item = new ListViewItem
+                                    {
+                                        Content = reader.GetString(1),
+                                        Tag = reader.GetInt32(0)
+                                    };
+                                    executorsList.Items.Add(item);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NotificationManager.Show($"Ошибка при загрузке списка исполнителей: {ex.Message}", NotificationType.Error);
+                    return;
+                }
+
+                var assignButton = new Button
+                {
+                    Content = "Назначить",
+                    Height = 35,
+                    Margin = new Thickness(0, 10, 0, 0),
+                    IsEnabled = false
+                };
+
+                executorsList.SelectionChanged += (s, args) =>
+                {
+                    assignButton.IsEnabled = executorsList.SelectedItem != null;
+                };
+
+                assignButton.Click += async (s, args) =>
+                {
+                    if (executorsList.SelectedItem is ListViewItem selectedItem)
+                    {
+                        var executorId = (int)selectedItem.Tag;
+                        try
+                        {
+                            using (var connection = DatabaseManager.GetConnection())
+                            {
+                                connection.Open();
+                                using (var transaction = connection.BeginTransaction())
+                                {
+                                    try
+                                    {
+                                        // Получаем ID статуса "В работе"
+                                        int inProgressStatusId;
+                                        var statusQuery = "SELECT StatusID FROM RequestStatuses WHERE Name = N'В работе'";
+                                        using (var command = new SqlCommand(statusQuery, connection, transaction))
+                                        {
+                                            var result = command.ExecuteScalar();
+                                            if (result == null)
+                                            {
+                                                throw new Exception("Статус 'В работе' не найден");
+                                            }
+                                            inProgressStatusId = (int)result;
+                                        }
+
+                                        // Обновляем заявку
+                                        var updateQuery = @"UPDATE Requests 
+                                                          SET StatusID = @StatusID,
+                                                              ExecutorID = @ExecutorID,
+                                                              LastModifiedDate = GETDATE()
+                                                          WHERE RequestID = @RequestID";
+
+                                        using (var command = new SqlCommand(updateQuery, connection, transaction))
+                                        {
+                                            command.Parameters.AddWithValue("@StatusID", inProgressStatusId);
+                                            command.Parameters.AddWithValue("@ExecutorID", executorId);
+                                            command.Parameters.AddWithValue("@RequestID", request.RequestID);
+                                            command.ExecuteNonQuery();
+                                        }
+
+                                        // Добавляем запись в историю
+                                        var historyQuery = @"INSERT INTO RequestHistory 
+                                                           (RequestID, StatusID, ChangedByUserID, ChangeDate, Comment)
+                                                           VALUES 
+                                                           (@RequestID, @StatusID, @UserID, GETDATE(), @Comment)";
+
+                                        var currentUserLogin = "";
+                                        if (Application.Current.MainWindow is MainWindow mainWindow)
+                                        {
+                                            currentUserLogin = mainWindow.CurrentUserLogin;
+                                        }
+
+                                        int userId;
+                                        using (var command = new SqlCommand("SELECT UserID FROM Users WHERE Login = @Login", connection, transaction))
+                                        {
+                                            command.Parameters.AddWithValue("@Login", currentUserLogin);
+                                            userId = (int)command.ExecuteScalar();
+                                        }
+
+                                        using (var command = new SqlCommand(historyQuery, connection, transaction))
+                                        {
+                                            command.Parameters.AddWithValue("@RequestID", request.RequestID);
+                                            command.Parameters.AddWithValue("@StatusID", inProgressStatusId);
+                                            command.Parameters.AddWithValue("@UserID", userId);
+                                            command.Parameters.AddWithValue("@Comment", "Назначен исполнитель");
+                                            command.ExecuteNonQuery();
+                                        }
+
+                                        transaction.Commit();
+                                        NotificationManager.Show("Исполнитель успешно назначен", NotificationType.Success);
+                                        window.Close();
+                                        LoadAllRequests();
+                                    }
+                                    catch (Exception)
+                                    {
+                                        transaction.Rollback();
+                                        throw;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            NotificationManager.Show($"Ошибка при назначении исполнителя: {ex.Message}", NotificationType.Error);
+                        }
+                    }
+                };
+
+                panel.Children.Add(title);
+                panel.Children.Add(executorsList);
+                panel.Children.Add(assignButton);
+                window.Content = panel;
+                window.ShowDialog();
             }
-
         }
 
 

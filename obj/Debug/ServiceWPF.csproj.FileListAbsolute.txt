@@ -33,3 +33,5 @@ C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF.csproj.GenerateResou
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF.csproj.CoreCompileInputs.cache
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF.exe
 C:\Users\igris\source\repos\ServiceWPF\obj\Debug\ServiceWPF.pdb
+C:\Users\igris\source\repos\ServiceWPF\obj\Debug\EditUserWindow.baml
+C:\Users\igris\source\repos\ServiceWPF\obj\Debug\EditUserWindow.g.cs
