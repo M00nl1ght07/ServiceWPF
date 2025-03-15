@@ -112,43 +112,50 @@ namespace ServiceWPF
 
         private void EditUser_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is UserInfo user)
+            if (sender is Button button && button.Tag is string login)
             {
-                NavigationService?.Navigate(new EditUserWindow(user.UserID));
+                var user = _allUsers.FirstOrDefault(u => u.Login == login);
+                if (user != null)
+                {
+                    NavigationService?.Navigate(new EditUserWindow(user.UserID));
+                }
             }
         }
 
         private void DeleteUser_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is UserInfo user)
+            if (sender is Button button && button.Tag is string login)
             {
-                var result = MessageBox.Show(
-                    $"Вы уверены, что хотите удалить пользователя {user.FullName}?",
-                    "Подтверждение удаления",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
+                var user = _allUsers.FirstOrDefault(u => u.Login == login);
+                if (user != null)
                 {
-                    try
+                    var result = MessageBox.Show(
+                        $"Вы уверены, что хотите удалить пользователя {user.FullName}?",
+                        "Подтверждение удаления",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
                     {
-                        using (var connection = DatabaseManager.GetConnection())
+                        try
                         {
-                            connection.Open();
-                            // Вместо физического удаления, помечаем пользователя как неактивного
-                            var query = "UPDATE Users SET IsActive = 0 WHERE UserID = @UserID";
-                            using (var command = new SqlCommand(query, connection))
+                            using (var connection = DatabaseManager.GetConnection())
                             {
-                                command.Parameters.AddWithValue("@UserID", user.UserID);
-                                command.ExecuteNonQuery();
-                                NotificationManager.Show("Пользователь успешно удален", NotificationType.Success);
-                                LoadUsers(); // Перезагружаем список
+                                connection.Open();
+                                var query = "UPDATE Users SET IsActive = 0 WHERE UserID = @UserID";
+                                using (var command = new SqlCommand(query, connection))
+                                {
+                                    command.Parameters.AddWithValue("@UserID", user.UserID);
+                                    command.ExecuteNonQuery();
+                                    NotificationManager.Show("Пользователь успешно удален", NotificationType.Success);
+                                    LoadUsers();
+                                }
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        NotificationManager.Show($"Ошибка при удалении пользователя: {ex.Message}", NotificationType.Error);
+                        catch (Exception ex)
+                        {
+                            NotificationManager.Show($"Ошибка при удалении пользователя: {ex.Message}", NotificationType.Error);
+                        }
                     }
                 }
             }
