@@ -81,48 +81,43 @@
 
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Border Padding="15"
-                                    Background="Transparent"
-                                    BorderThickness="0,0,0,1"
-                                    BorderBrush="#E0E0E0">
+                            <Border BorderThickness="0,0,0,1"
+                                    BorderBrush="#E0E0E0"
+                                    Padding="15">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Информация о пользователе -->
                                     <StackPanel>
                                         <TextBlock Text="{Binding FullName}"
-                                                 FontSize="16"
                                                  FontWeight="Medium"/>
-                                        <StackPanel Orientation="Horizontal"
-                                                  Margin="0,5,0,0">
-                                            <TextBlock Text="{Binding Email}"
-                                                     Foreground="#757575"/>
-                                            <TextBlock Text=" • "
-                                                     Foreground="#757575"/>
-                                            <TextBlock Text="{Binding Role}"
-                                                     Foreground="#2196F3"/>
-                                        </StackPanel>
+                                        <TextBlock Text="{Binding Login}"
+                                                 Foreground="#757575"
+                                                 FontSize="14"/>
+                                        <TextBlock Text="{Binding Role}"
+                                                 Foreground="#757575"
+                                                 FontSize="14"/>
+                                        <TextBlock Text="{Binding RatingInfo}"
+                                                 Foreground="#FFC107"
+                                                 FontSize="14"
+                                                 Visibility="{Binding IsExecutor, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     </StackPanel>
 
-                                    <!-- Кнопки управления -->
-                                    <StackPanel Grid.Column="1"
-                                              Orientation="Horizontal"
-                                              Margin="20,0,0,0">
-                                        <Button Content="Изменить"
-                                                Height="35"
-                                                Width="100"
-                                                Margin="0,0,10,0"
-                                                Click="EditUser_Click"
-                                                Tag="{Binding}"/>
-                                        <Button Content="Удалить"
-                                                Height="35"
-                                                Width="100"
-                                                Click="DeleteUser_Click"
-                                                Tag="{Binding}"/>
-                                    </StackPanel>
+                                    <Button Grid.Column="1"
+                                            Content="Изменить"
+                                            Click="EditUser_Click"
+                                            Tag="{Binding Login}"
+                                            Style="{StaticResource PrimaryButton}"
+                                            Margin="0,0,10,0"/>
+
+                                    <Button Grid.Column="2"
+                                            Content="Удалить"
+                                            Click="DeleteUser_Click"
+                                            Tag="{Binding Login}"
+                                            Style="{StaticResource DangerButton}"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>

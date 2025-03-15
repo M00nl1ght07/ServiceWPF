@@ -95,6 +95,16 @@
                 <TextBlock Text="Последнее изменение: "/>
                 <TextBlock x:Name="LastModifiedDateTextBlock" Text=""/>
             </StackPanel>
+
+            <!-- Добавьте после информации о заявке -->
+            <Button x:Name="LeaveReviewButton"
+                    Content="Оставить отзыв"
+                    Height="35"
+                    Width="150"
+                    HorizontalAlignment="Left"
+                    Margin="0,10,0,20"
+                    Click="LeaveReview_Click"
+                    Visibility="Collapsed"/>
         </StackPanel>
 
         <!-- История и комментарии -->

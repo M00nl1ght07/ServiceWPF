@@ -1,0 +1,59 @@
+﻿<Page
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      x:Class="ServiceWPF.ReviewsAdminPage"
+      Title="Отзывы мастеров"
+      Background="White">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Text="Отзывы мастеров"
+                 FontSize="24"
+                 FontWeight="Medium"
+                 Margin="0,0,0,20"/>
+
+        <!-- Список мастеров -->
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl x:Name="ExecutorsList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="0,0,0,1"
+                                BorderBrush="#E0E0E0"
+                                Padding="15"
+                                Margin="0,0,0,10">
+                            <DockPanel>
+                                <!-- Информация о мастере -->
+                                <StackPanel>
+                                    <TextBlock Text="{Binding FullName}"
+                                             FontSize="18"
+                                             FontWeight="Medium"/>
+                                    <StackPanel Orientation="Horizontal"
+                                              Margin="0,5,0,0">
+                                        <TextBlock Text="Средний рейтинг: "/>
+                                        <TextBlock Text="{Binding AverageRating, StringFormat=\{0:F1\}}"/>
+                                        <TextBlock Text=" из 5"/>
+                                        <TextBlock Text=" ("/>
+                                        <TextBlock Text="{Binding ReviewsCount}"/>
+                                        <TextBlock Text=" отзывов)"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <Button Content="Просмотреть отзывы"
+                                        Click="ViewReviews_Click"
+                                        Tag="{Binding ExecutorId}"
+                                        Padding="15,8" Foreground="White" BorderThickness="0" Background="#2196F3"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Page>

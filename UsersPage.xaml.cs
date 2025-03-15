@@ -49,30 +49,40 @@ namespace ServiceWPF
                                 U.FirstName,
                                 U.MiddleName,
                                 U.Email,
-                                R.Name as RoleName
-                                FROM Users U
-                                JOIN Roles R ON U.RoleID = R.RoleID
-                                WHERE U.IsActive = 1
-                                ORDER BY U.LastName, U.FirstName";
+                                R.Name as RoleName,
+                                ISNULL((SELECT AVG(Rating * 1.0)
+                                    FROM Reviews 
+                                    WHERE ExecutorID = U.UserID), 0) as Rating
+                            FROM Users U
+                            JOIN Roles R ON U.RoleID = R.RoleID
+                            WHERE U.IsActive = 1
+                            ORDER BY U.LastName, U.FirstName";
 
                     using (var command = new SqlCommand(query, connection))
+                    using (var reader = command.ExecuteReader())
                     {
-                        using (var reader = command.ExecuteReader())
+                        _allUsers = new List<UserInfo>();
+                        while (reader.Read())
                         {
-                            _allUsers = new List<UserInfo>();
-                            while (reader.Read())
+                            var userInfo = new UserInfo
                             {
-                                _allUsers.Add(new UserInfo
-                                {
-                                    UserID = reader.GetInt32(0),
-                                    Login = reader.GetString(1),
-                                    FullName = $"{reader.GetString(2)} {reader.GetString(3)} {(reader.IsDBNull(4) ? "" : reader.GetString(4))}",
-                                    Email = reader.GetString(5),
-                                    Role = reader.GetString(6)
-                                });
+                                UserID = reader.GetInt32(0),
+                                Login = reader.GetString(1),
+                                FullName = $"{reader.GetString(2)} {reader.GetString(3)} {(reader.IsDBNull(4) ? "" : reader.GetString(4))}",
+                                Email = reader.GetString(5),
+                                Role = reader.GetString(6)
+                            };
+
+                            // Если это мастер - добавляем информацию о рейтинге
+                            if (userInfo.Role == "Исполнитель")
+                            {
+                                userInfo.RatingInfo = $"Рейтинг: {reader.GetDouble(7):F1}";
+                                userInfo.IsExecutor = true;
                             }
-                            ApplySearch();
+
+                            _allUsers.Add(userInfo);
                         }
+                        ApplySearch();
                     }
                 }
             }
@@ -152,6 +162,8 @@ namespace ServiceWPF
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Role { get; set; }
+        public string RatingInfo { get; set; }
+        public bool IsExecutor { get; set; }
     }
 }
 

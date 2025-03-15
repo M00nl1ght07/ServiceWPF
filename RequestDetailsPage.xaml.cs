@@ -40,7 +40,7 @@ namespace ServiceWPF
                     var query = @"SELECT R.Title, R.Description, 
                                 FORMAT(R.CreatedDate, 'dd.MM.yyyy HH:mm') as CreatedDate,
                                 S.Name as Status, P.Name as Priority,
-                                CONCAT(U.LastName, ' ', U.FirstName, ' ', ISNULL(U.MiddleName, '')) as CreatedBy,
+                                U.Login as CreatedByLogin,
                                 CONCAT(E.LastName, ' ', E.FirstName, ' ', ISNULL(E.MiddleName, '')) as Executor,
                                 FORMAT(R.CompletionDate, 'dd.MM.yyyy HH:mm') as CompletionDate,
                                 FORMAT(R.LastModifiedDate, 'dd.MM.yyyy HH:mm') as LastModifiedDate
@@ -77,6 +77,37 @@ namespace ServiceWPF
 
                     // После загрузки основных деталей добавим загрузку комментариев
                     LoadComments();
+
+                    // Проверяем, может ли пользователь оставить отзыв
+                    var currentUserLogin = "";
+                    if (Application.Current.MainWindow is MainWindow mainWindow)
+                    {
+                        currentUserLogin = mainWindow.CurrentUserLogin;
+                    }
+
+                    var checkReviewQuery = @"SELECT COUNT(*)
+                                           FROM Reviews R
+                                           JOIN Users U ON R.UserID = U.UserID
+                                           WHERE R.RequestID = @RequestID 
+                                           AND U.Login = @UserLogin";
+
+                    using (var command = new SqlCommand(checkReviewQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@RequestID", _requestId);
+                        command.Parameters.AddWithValue("@UserLogin", currentUserLogin);
+                        var reviewExists = (int)command.ExecuteScalar() > 0;
+
+                        // Показываем кнопку только если:
+                        // 1. Заявка завершена
+                        // 2. Текущий пользователь создал заявку (проверяем по логину)
+                        // 3. Отзыв еще не оставлен
+                        LeaveReviewButton.Visibility = 
+                            StatusTextBlock.Text == "Завершена" && 
+                            CreatedByTextBlock.Text == currentUserLogin &&
+                            !reviewExists
+                                ? Visibility.Visible 
+                                : Visibility.Collapsed;
+                    }
                 }
             }
             catch (Exception ex)
@@ -198,50 +229,114 @@ namespace ServiceWPF
                 using (var connection = DatabaseManager.GetConnection())
                 {
                     connection.Open();
-
-                    // Получаем ID текущего пользователя
-                    var currentUserLogin = "";
-                    if (Application.Current.MainWindow is MainWindow mainWindow)
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        currentUserLogin = mainWindow.CurrentUserLogin;
-                    }
-
-                    var getUserIdQuery = "SELECT UserID FROM Users WHERE Login = @Login";
-                    int userId;
-                    using (var command = new SqlCommand(getUserIdQuery, connection))
-                    {
-                        command.Parameters.AddWithValue("@Login", currentUserLogin);
-                        var result = command.ExecuteScalar();
-                        if (result == null)
+                        try
                         {
-                            NotificationManager.Show("Ошибка: пользователь не найден", NotificationType.Error);
-                            return;
+                            // Получаем ID текущего пользователя
+                            var currentUserLogin = "";
+                            if (Application.Current.MainWindow is MainWindow mainWindow)
+                            {
+                                currentUserLogin = mainWindow.CurrentUserLogin;
+                            }
+
+                            int userId;
+                            using (var command = new SqlCommand("SELECT UserID FROM Users WHERE Login = @Login", connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@Login", currentUserLogin);
+                                var result = command.ExecuteScalar();
+                                if (result == null)
+                                {
+                                    NotificationManager.Show("Ошибка: пользователь не найден", NotificationType.Error);
+                                    return;
+                                }
+                                userId = (int)result;
+                            }
+
+                            // Добавляем комментарий
+                            var query = @"INSERT INTO RequestComments (RequestID, UserID, Text, CreatedDate)
+                                        VALUES (@RequestID, @UserID, @Text, GETDATE())";
+
+                            using (var command = new SqlCommand(query, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@RequestID", _requestId);
+                                command.Parameters.AddWithValue("@UserID", userId);
+                                command.Parameters.AddWithValue("@Text", commentText);
+                                command.ExecuteNonQuery();
+                            }
+
+                            // Получаем автора заявки и заголовок
+                            string requestAuthorLogin, requestTitle;
+                            using (var command = new SqlCommand(
+                                @"SELECT U.Login, R.Title
+                                  FROM Requests R 
+                                  JOIN Users U ON R.CreatedByUserID = U.UserID 
+                                  WHERE R.RequestID = @RequestID", connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@RequestID", _requestId);
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    reader.Read();
+                                    requestAuthorLogin = reader.GetString(0);
+                                    requestTitle = reader.GetString(1);
+                                }
+                            }
+
+                            // Получаем исполнителя заявки для уведомления
+                            string executorLogin;
+                            using (var command = new SqlCommand(
+                                @"SELECT U.Login 
+                                  FROM Requests R 
+                                  JOIN Users U ON R.ExecutorID = U.UserID 
+                                  WHERE R.RequestID = @RequestID", connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@RequestID", _requestId);
+                                executorLogin = command.ExecuteScalar() as string;
+                            }
+
+                            // Создаем уведомления
+                            if (requestAuthorLogin != currentUserLogin) // Уведомление автору
+                            {
+                                NotificationManager.CreateNotification(
+                                    requestAuthorLogin,
+                                    "Новый комментарий к заявке",
+                                    $"К вашей заявке '{requestTitle}' добавлен новый комментарий",
+                                    NotificationType.Info
+                                );
+                            }
+
+                            if (executorLogin != null && executorLogin != currentUserLogin) // Уведомление исполнителю
+                            {
+                                NotificationManager.CreateNotification(
+                                    executorLogin,
+                                    "Новый комментарий к заявке",
+                                    $"К заявке '{requestTitle}' добавлен новый комментарий",
+                                    NotificationType.Info
+                                );
+                            }
+
+                            transaction.Commit();
+                            CommentBox.Clear();
+                            LoadComments(); // Перезагружаем комментарии
+                            NotificationManager.Show("Комментарий добавлен", NotificationType.Success);
                         }
-                        userId = (int)result;
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
                     }
-
-                    // Добавляем комментарий
-                    var query = @"INSERT INTO RequestComments (RequestID, UserID, Text, CreatedDate)
-                                 VALUES (@RequestID, @UserID, @Text, GETDATE())";
-
-                    using (var command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@RequestID", _requestId);
-                        command.Parameters.AddWithValue("@UserID", userId);
-                        command.Parameters.AddWithValue("@Text", commentText);
-                        command.ExecuteNonQuery();
-                    }
-
-                    // Очищаем поле ввода и обновляем список комментариев
-                    CommentBox.Clear();
-                    LoadComments();
-                    NotificationManager.Show("Комментарий добавлен", NotificationType.Success);
                 }
             }
             catch (Exception ex)
             {
                 NotificationManager.Show($"Ошибка при добавлении комментария: {ex.Message}", NotificationType.Error);
             }
+        }
+
+        private void LeaveReview_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService?.Navigate(new ReviewPage(_requestId));
         }
     }
 }

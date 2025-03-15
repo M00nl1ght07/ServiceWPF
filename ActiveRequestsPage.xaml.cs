@@ -211,6 +211,63 @@ namespace ServiceWPF
                                     command.ExecuteNonQuery();
                                 }
 
+                                // Получаем автора заявки и заголовок
+                                string requestAuthorLogin, requestTitle;
+                                using (var command = new SqlCommand(
+                                    @"SELECT U.Login, R.Title
+                                      FROM Requests R 
+                                      JOIN Users U ON R.CreatedByUserID = U.UserID 
+                                      WHERE R.RequestID = @RequestID", connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@RequestID", requestId);
+                                    using (var reader = command.ExecuteReader())
+                                    {
+                                        reader.Read();
+                                        requestAuthorLogin = reader.GetString(0);
+                                        requestTitle = reader.GetString(1);
+                                    }
+                                }
+
+                                // Отправляем уведомление автору заявки
+                                if (requestAuthorLogin != currentUserLogin)
+                                {
+                                    NotificationManager.CreateNotification(
+                                        requestAuthorLogin,
+                                        "Статус заявки изменен",
+                                        $"Статус вашей заявки '{requestTitle}' изменен на '{newStatus}'",
+                                        NotificationType.Info
+                                    );
+                                }
+
+                                // Получаем всех администраторов
+                                List<string> adminLogins = new List<string>();
+                                using (var command = new SqlCommand(
+                                    @"SELECT U.Login 
+                                      FROM Users U 
+                                      JOIN Roles R ON U.RoleID = R.RoleID 
+                                      WHERE R.Name = 'Admin' AND U.Login != @CurrentUser", connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@CurrentUser", currentUserLogin);
+                                    using (var reader = command.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            adminLogins.Add(reader.GetString(0));
+                                        }
+                                    }
+                                }
+
+                                // Отправляем уведомления всем администраторам
+                                foreach (var adminLogin in adminLogins)
+                                {
+                                    NotificationManager.CreateNotification(
+                                        adminLogin,
+                                        "Изменение статуса заявки",
+                                        $"Исполнитель {currentUserLogin} изменил статус заявки '{requestTitle}' на '{newStatus}'",
+                                        NotificationType.Info
+                                    );
+                                }
+
                                 transaction.Commit();
                                 NotificationManager.Show($"Статус заявки успешно изменен на '{newStatus}'", NotificationType.Success);
                                 LoadActiveRequests(); // Перезагружаем список

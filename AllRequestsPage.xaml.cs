@@ -606,177 +606,171 @@ namespace ServiceWPF
 
         {
 
-            if (sender is Button button && button.Tag != null)
+            if (sender is Button button && button.Tag is AdminRequest request)
 
             {
 
-                var request = button.Tag as AdminRequest;
-
-                var dialogResult = MessageBox.Show($"Вы уверены, что хотите отменить заявку: {request.Title}?",
-
-                    "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-
-
-                if (dialogResult == MessageBoxResult.Yes)
+                try
 
                 {
 
-                    try
+                    using (var connection = DatabaseManager.GetConnection())
 
                     {
 
-                        using (var connection = DatabaseManager.GetConnection())
+                        connection.Open();
+
+                        using (var transaction = connection.BeginTransaction())
 
                         {
 
-                            connection.Open();
-
-                            using (var transaction = connection.BeginTransaction())
+                            try
 
                             {
 
-                                try
-
+                                var currentUserLogin = "";
+                                if (Application.Current.MainWindow is MainWindow mainWindow)
                                 {
-
-                                    // Получаем ID статуса "Отменена"
-
-                                    int cancelStatusId;
-
-                                    var statusQuery = "SELECT StatusID FROM RequestStatuses WHERE Name = N'Отменена'";
-
-                                    using (var command = new SqlCommand(statusQuery, connection, transaction))
-
-                                    {
-
-                                        var statusResult = command.ExecuteScalar();
-
-                                        if (statusResult == null)
-
-                                        {
-
-                                            throw new Exception("Статус 'Отменена' не найден в базе данных");
-
-                                        }
-
-                                        cancelStatusId = (int)statusResult;
-
-                                    }
-
-
-
-                                    // Обновляем статус заявки
-
-                                    var updateQuery = @"UPDATE Requests 
-
-                                                      SET StatusID = @StatusID, 
-
-                                                          LastModifiedDate = GETDATE()
-
-                                                      WHERE RequestID = @RequestID";
-
-
-
-                                    using (var command = new SqlCommand(updateQuery, connection, transaction))
-
-                                    {
-
-                                        command.Parameters.AddWithValue("@StatusID", cancelStatusId);
-
-                                        command.Parameters.AddWithValue("@RequestID", request.RequestID);
-
-                                        command.ExecuteNonQuery();
-
-                                    }
-
-
-
-                                    // Получаем ID текущего пользователя
-
-                                    var currentUserLogin = "";
-
-                                    if (Application.Current.MainWindow is MainWindow mainWindow)
-
-                                    {
-
-                                        currentUserLogin = mainWindow.CurrentUserLogin;
-
-                                    }
-
-
-
-                                    var getUserIdQuery = "SELECT UserID FROM Users WHERE Login = @Login";
-
-                                    int userId;
-
-                                    using (var command = new SqlCommand(getUserIdQuery, connection, transaction))
-
-                                    {
-
-                                        command.Parameters.AddWithValue("@Login", currentUserLogin);
-
-                                        var userResult = command.ExecuteScalar();
-
-                                        if (userResult == null)
-
-                                        {
-
-                                            throw new Exception("Пользователь не найден");
-
-                                        }
-
-                                        userId = (int)userResult;
-
-                                    }
-
-
-
-                                    // Добавляем запись в историю
-
-                                    var historyQuery = @"INSERT INTO RequestHistory 
-
-                                                       (RequestID, StatusID, ChangedByUserID, ChangeDate, Comment)
-
-                                                       VALUES 
-
-                                                       (@RequestID, @StatusID, @UserID, GETDATE(), N'Заявка отменена администратором')";
-
-
-
-                                    using (var command = new SqlCommand(historyQuery, connection, transaction))
-
-                                    {
-
-                                        command.Parameters.AddWithValue("@RequestID", request.RequestID);
-
-                                        command.Parameters.AddWithValue("@StatusID", cancelStatusId);
-
-                                        command.Parameters.AddWithValue("@UserID", userId);
-
-                                        command.ExecuteNonQuery();
-
-                                    }
-
-
-
-                                    transaction.Commit();
-
-                                    NotificationManager.Show("Заявка успешно отменена", NotificationType.Success);
-
-                                    LoadAllRequests(); // Перезагружаем список
-
+                                    currentUserLogin = mainWindow.CurrentUserLogin;
                                 }
 
-                                catch (Exception)
-
+                                // Получаем ID статуса "Отменена"
+                                int cancelledStatusId;
+                                using (var command = new SqlCommand("SELECT StatusID FROM RequestStatuses WHERE Name = N'Отменена'", connection, transaction))
                                 {
-
-                                    transaction.Rollback();
-
-                                    throw;
-
+                                    cancelledStatusId = (int)command.ExecuteScalar();
                                 }
+
+                                // Обновляем статус заявки
+                                var updateQuery = @"UPDATE Requests 
+                                                  SET StatusID = @StatusID, 
+                                                      LastModifiedDate = GETDATE() 
+                                                  WHERE RequestID = @RequestID";
+
+                                using (var command = new SqlCommand(updateQuery, connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@StatusID", cancelledStatusId);
+                                    command.Parameters.AddWithValue("@RequestID", request.RequestID);
+                                    command.ExecuteNonQuery();
+                                }
+
+                                // Получаем ID текущего пользователя
+                                int userId;
+                                using (var command = new SqlCommand("SELECT UserID FROM Users WHERE Login = @Login", connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@Login", currentUserLogin);
+                                    userId = (int)command.ExecuteScalar();
+                                }
+
+                                // Добавляем запись в историю
+                                var historyQuery = @"INSERT INTO RequestHistory 
+                                                   (RequestID, StatusID, ChangedByUserID, ChangeDate, Comment)
+                                                   VALUES 
+                                                   (@RequestID, @StatusID, @UserID, GETDATE(), N'Заявка отменена администратором')";
+
+                                using (var command = new SqlCommand(historyQuery, connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@RequestID", request.RequestID);
+                                    command.Parameters.AddWithValue("@StatusID", cancelledStatusId);
+                                    command.Parameters.AddWithValue("@UserID", userId);
+                                    command.ExecuteNonQuery();
+                                }
+
+                                // Получаем автора заявки и заголовок
+                                string requestAuthorLogin, requestTitle;
+                                using (var command = new SqlCommand(
+                                    @"SELECT U.Login, R.Title
+                                      FROM Requests R 
+                                      JOIN Users U ON R.CreatedByUserID = U.UserID 
+                                      WHERE R.RequestID = @RequestID", connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@RequestID", request.RequestID);
+                                    using (var reader = command.ExecuteReader())
+                                    {
+                                        reader.Read();
+                                        requestAuthorLogin = reader.GetString(0);
+                                        requestTitle = reader.GetString(1);
+                                    }
+                                }
+
+                                // Получаем исполнителя заявки (если есть)
+                                string executorLogin = null;
+                                using (var command = new SqlCommand(
+                                    @"SELECT U.Login 
+                                      FROM Requests R 
+                                      JOIN Users U ON R.ExecutorID = U.UserID 
+                                      WHERE R.RequestID = @RequestID", connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@RequestID", request.RequestID);
+                                    var result = command.ExecuteScalar();
+                                    if (result != null)
+                                        executorLogin = (string)result;
+                                }
+
+                                // Получаем всех администраторов
+                                List<string> adminLogins = new List<string>();
+                                using (var command = new SqlCommand(
+                                    @"SELECT U.Login 
+                                      FROM Users U 
+                                      JOIN Roles R ON U.RoleID = R.RoleID 
+                                      WHERE R.Name = 'Admin' AND U.Login != @CurrentUser", connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@CurrentUser", currentUserLogin);
+                                    using (var reader = command.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            adminLogins.Add(reader.GetString(0));
+                                        }
+                                    }
+                                }
+
+                                // Отправляем уведомления
+                                // Автору заявки
+                                if (requestAuthorLogin != currentUserLogin)
+                                {
+                                    NotificationManager.CreateNotification(
+                                        requestAuthorLogin,
+                                        "Заявка отменена",
+                                        $"Ваша заявка '{requestTitle}' была отменена администратором",
+                                        NotificationType.Warning
+                                    );
+                                }
+
+                                // Исполнителю, если он назначен
+                                if (executorLogin != null && executorLogin != currentUserLogin)
+                                {
+                                    NotificationManager.CreateNotification(
+                                        executorLogin,
+                                        "Заявка отменена",
+                                        $"Заявка '{requestTitle}' была отменена администратором",
+                                        NotificationType.Warning
+                                    );
+                                }
+
+                                // Другим администраторам
+                                foreach (var adminLogin in adminLogins)
+                                {
+                                    NotificationManager.CreateNotification(
+                                        adminLogin,
+                                        "Заявка отменена администратором",
+                                        $"Заявка '{requestTitle}' была отменена администратором {currentUserLogin}",
+                                        NotificationType.Info
+                                    );
+                                }
+
+                                transaction.Commit();
+                                NotificationManager.Show("Заявка успешно отменена", NotificationType.Success);
+                                LoadAllRequests(); // Перезагружаем список
+                            }
+
+                            catch (Exception)
+
+                            {
+
+                                transaction.Rollback();
+
+                                throw;
 
                             }
 
@@ -784,13 +778,13 @@ namespace ServiceWPF
 
                     }
 
-                    catch (Exception ex)
+                }
 
-                    {
+                catch (Exception ex)
 
-                        NotificationManager.Show($"Ошибка при отмене заявки: {ex.Message}", NotificationType.Error);
+                {
 
-                    }
+                    NotificationManager.Show($"Ошибка при отмене заявки: {ex.Message}", NotificationType.Error);
 
                 }
 

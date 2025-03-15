@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Converters"
   ],
-  "SelectedNode": "\\EditUserWindow.xaml.cs",
+  "SelectedNode": "\\ServiceWPF.sln",
   "PreviewInSolutionExplorer": false
 }

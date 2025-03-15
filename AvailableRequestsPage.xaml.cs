@@ -31,6 +31,7 @@ namespace ServiceWPF
             public string CreatedDate { get; set; }
             public string Priority { get; set; }
             public string CreatedDateFull { get; set; }
+            public string CreatedByUserLogin { get; set; }
         }
 
         public AvailableRequestsPage()
@@ -53,10 +54,12 @@ namespace ServiceWPF
                                 R.Description,
                                 FORMAT(R.CreatedDate, 'dd.MM.yyyy') as CreatedDate,
                                 FORMAT(R.CreatedDate, 'dd.MM.yyyy HH:mm:ss') as CreatedDateFull,
-                                P.Name as Priority
+                                P.Name as Priority,
+                                U.Login as CreatedByUserLogin
                                 FROM Requests R
                                 JOIN RequestPriorities P ON R.PriorityID = P.PriorityID
                                 JOIN RequestStatuses S ON R.StatusID = S.StatusID
+                                JOIN Users U ON R.CreatedByUserID = U.UserID
                                 WHERE S.Name = N'Новая'
                                 ORDER BY R.CreatedDate DESC";
 
@@ -74,7 +77,8 @@ namespace ServiceWPF
                                     Description = reader.GetString(2),
                                     CreatedDate = reader.GetString(3),
                                     CreatedDateFull = reader.GetString(4),
-                                    Priority = reader.GetString(5)
+                                    Priority = reader.GetString(5),
+                                    CreatedByUserLogin = reader.GetString(6)
                                 });
                             }
                         }
@@ -196,6 +200,14 @@ namespace ServiceWPF
                                     command.Parameters.AddWithValue("@UserID", userId);
                                     command.ExecuteNonQuery();
                                 }
+
+                                // Добавляем уведомление
+                                NotificationManager.CreateNotification(
+                                    request.CreatedByUserLogin,
+                                    "Заявка взята в работу",
+                                    $"Ваша заявка '{request.Title}' взята в работу",
+                                    NotificationType.Info
+                                );
 
                                 transaction.Commit();
                                 NotificationManager.Show("Заявка успешно взята в работу", NotificationType.Success);

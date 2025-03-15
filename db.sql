@@ -77,6 +77,18 @@ CREATE TABLE RequestComments (
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
+-- Таблица для уведомлений
+CREATE TABLE Notifications (
+    NotificationID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NOT NULL,
+    Title NVARCHAR(100) NOT NULL,
+    Message NVARCHAR(MAX) NOT NULL,
+    CreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    IsRead BIT NOT NULL DEFAULT 0,
+    Type NVARCHAR(50) NOT NULL, -- Info, Success, Warning, Error
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
 -- Заполнение справочных таблиц
 INSERT INTO Roles (Name, Description) VALUES 
 ('Admin', N'Администратор системы'),
