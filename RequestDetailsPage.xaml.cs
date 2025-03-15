@@ -222,6 +222,18 @@ namespace ServiceWPF
                                 userId = (int)result;
                             }
 
+                            // Добавляем комментарий
+                            var query = @"INSERT INTO RequestComments (RequestID, UserID, Text, CreatedDate)
+                                        VALUES (@RequestID, @UserID, @Text, GETDATE())";
+
+                            using (var command = new SqlCommand(query, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@RequestID", _requestId);
+                                command.Parameters.AddWithValue("@UserID", userId);
+                                command.Parameters.AddWithValue("@Text", commentText);
+                                command.ExecuteNonQuery();
+                            }
+
                             // Получаем автора заявки и заголовок
                             string requestAuthorLogin, requestTitle;
                             using (var command = new SqlCommand(
@@ -274,7 +286,7 @@ namespace ServiceWPF
 
                             transaction.Commit();
                             CommentBox.Clear();
-                            LoadComments();
+                            LoadComments(); // Перезагружаем комментарии
                             NotificationManager.Show("Комментарий добавлен", NotificationType.Success);
                         }
                         catch (Exception)

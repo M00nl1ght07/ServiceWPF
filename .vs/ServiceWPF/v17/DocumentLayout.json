@@ -1,12 +1,54 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\activerequestspage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:activerequestspage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|c:\\users\\igris\\source\\repos\\servicewpf\\allrequestspage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DBEA23F1-0002-4776-AF37-D86CA661F269}|ServiceWPF.csproj|solutionrelative:allrequestspage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AllRequestsPage.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml.cs",
+              "RelativeDocumentMoniker": "AllRequestsPage.xaml.cs",
+              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\AllRequestsPage.xaml.cs",
+              "RelativeToolTip": "AllRequestsPage.xaml.cs",
+              "ViewState": "AQIAAOgBAAAAAAAAAAAkwPgBAAA2AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-15T10:56:54.125Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ActiveRequestsPage.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\ActiveRequestsPage.xaml.cs",
+              "RelativeDocumentMoniker": "ActiveRequestsPage.xaml.cs",
+              "ToolTip": "C:\\Users\\igris\\source\\repos\\ServiceWPF\\ActiveRequestsPage.xaml.cs",
+              "RelativeToolTip": "ActiveRequestsPage.xaml.cs",
+              "ViewState": "AQIAADQAAAAAAAAAAAAkwEgAAABUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-15T10:56:51.939Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
