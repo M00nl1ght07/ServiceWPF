@@ -1,173 +1,344 @@
 ﻿<Page x:Class="ServiceWPF.StatisticsPage"
+
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+      xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+
       Title="Статистика"
+
       Background="White">
 
+
+
     <ScrollViewer>
-        <StackPanel Margin="20">
-            <!-- Общая статистика -->
+
+        <StackPanel Margin="0,0,20,0">
+
             <TextBlock Text="Общая статистика"
+
                      FontSize="24"
+
                      FontWeight="Medium"
+
                      Margin="0,0,0,20"/>
 
-            <WrapPanel>
+
+
+            <!-- Общие показатели -->
+
+            <WrapPanel Margin="0,0,0,30" 
+                       HorizontalAlignment="Left">
+
                 <!-- Всего заявок -->
-                <Border Background="#E3F2FD"
-                        Padding="20"
-                        CornerRadius="4"
-                        Margin="0,0,20,20"
-                        Width="200">
-                    <StackPanel>
+
+                <Border Background="#E3F2FD" 
+                        CornerRadius="8" 
+                        Padding="20" 
+                        Width="180"
+                        Height="130"
+                        Margin="0,0,15,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
                         <TextBlock Text="Всего заявок"
-                                 FontWeight="Medium"/>
+                                 FontSize="16"
+                                 VerticalAlignment="Top"/>
                         <TextBlock x:Name="TotalRequestsCount"
                                  Text="0"
-                                 FontSize="24"
-                                 FontWeight="Medium"
-                                 Margin="0,10,0,0"/>
-                    </StackPanel>
+                                 FontSize="32"
+                                 FontWeight="Bold"
+                                 Grid.Row="1"
+                                 VerticalAlignment="Center"/>
+                    </Grid>
                 </Border>
 
-                <!-- Среднее время выполнения -->
-                <Border Background="#E8F5E9"
-                        Padding="20"
-                        CornerRadius="4"
-                        Margin="0,0,20,20"
-                        Width="200">
-                    <StackPanel>
+
+
+                <!-- Среднее время -->
+
+                <Border Background="#E8F5E9" 
+                        CornerRadius="8" 
+                        Padding="20" 
+                        Width="180"
+                        Height="130"
+                        Margin="0,0,15,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
                         <TextBlock Text="Среднее время"
-                                 FontWeight="Medium"/>
+                                 FontSize="16"
+                                 TextWrapping="Wrap"
+                                 VerticalAlignment="Top"/>
                         <TextBlock x:Name="AverageCompletionTime"
-                                 Text="0 часов"
-                                 FontSize="24"
-                                 FontWeight="Medium"
-                                 Margin="0,10,0,0"/>
-                    </StackPanel>
+                                 Text="0 ч."
+                                 FontSize="32"
+                                 FontWeight="Bold"
+                                 Grid.Row="1"
+                                 VerticalAlignment="Center"/>
+                    </Grid>
                 </Border>
+
+
+
+                <!-- Заявок в работе -->
+
+                <Border Background="#FFF3E0" 
+                        CornerRadius="8" 
+                        Padding="20" 
+                        Width="180"
+                        Height="130"
+                        Margin="0,0,15,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Заявок в работе"
+                                 FontSize="16"
+                                 VerticalAlignment="Top"/>
+                        <TextBlock x:Name="ActiveRequestsCount"
+                                 Text="0"
+                                 FontSize="32"
+                                 FontWeight="Bold"
+                                 Grid.Row="1"
+                                 VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+
+
+                <!-- Завершено за неделю -->
+
+                <Border Background="#E1F5FE" 
+                        CornerRadius="8" 
+                        Padding="20" 
+                        Width="180"
+                        Height="130"
+                        Margin="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Завершено за нед."
+                                 FontSize="16"
+                                 TextWrapping="Wrap"
+                                 VerticalAlignment="Top"/>
+                        <TextBlock x:Name="CompletedThisWeek"
+                                 Text="0"
+                                 FontSize="32"
+                                 FontWeight="Bold"
+                                 Grid.Row="1"
+                                 VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
             </WrapPanel>
 
-            <!-- Статистика по статусам -->
-            <Border Background="White"
-                    BorderThickness="1"
-                    BorderBrush="#EEEEEE"
-                    CornerRadius="4"
-                    Padding="20"
-                    Margin="0,0,0,20">
-                <StackPanel>
-                    <TextBlock Text="Статистика по статусам"
-                             FontSize="20"
-                             FontWeight="Medium"
-                             Margin="0,0,0,15"/>
 
-                    <ItemsControl x:Name="StatusStatsList">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="#FAFAFA"
-                                        Margin="0,5"
-                                        CornerRadius="4"
-                                        Padding="15,10">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{Binding Status}"
-                                                 VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding Count}"
-                                                 Grid.Column="1"
-                                                 FontWeight="Medium"
-                                                 FontSize="16"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
+
+            <!-- Статистика по статусам -->
+
+            <TextBlock Text="Статистика по статусам"
+
+                     FontSize="20"
+
+                     FontWeight="Medium"
+
+                     Margin="0,0,0,20"/>
+
+
+
+            <Grid Height="300" Margin="0,0,0,40">
+
+                <Grid.ColumnDefinitions>
+
+                    <ColumnDefinition/>
+
+                    <ColumnDefinition/>
+
+                </Grid.ColumnDefinitions>
+
+
+
+                <!-- Круговая диаграмма статусов -->
+
+                <lvc:PieChart x:Name="StatusPieChart"
+
+                            LegendLocation="Right"
+
+                            DataTooltip="{x:Null}">
+
+                    <lvc:PieChart.ChartLegend>
+
+                        <lvc:DefaultLegend BulletSize="15"/>
+
+                    </lvc:PieChart.ChartLegend>
+
+                </lvc:PieChart>
+
+
+
+                <!-- Столбчатая диаграмма статусов -->
+
+                <lvc:CartesianChart Grid.Column="1" 
+
+                                  x:Name="StatusBarChart"
+
+                                  Margin="0,10,0,40">
+
+                    <lvc:CartesianChart.AxisX>
+
+                        <lvc:Axis Title="Статус" 
+
+                                 FontSize="14">
+
+                            <lvc:Axis.Separator>
+
+                                <lvc:Separator Step="1"/>
+
+                            </lvc:Axis.Separator>
+
+                            <lvc:Axis.LabelsRotation>-45</lvc:Axis.LabelsRotation>
+
+                        </lvc:Axis>
+
+                    </lvc:CartesianChart.AxisX>
+
+                    <lvc:CartesianChart.AxisY>
+
+                        <lvc:Axis Title="Количество" 
+
+                                 FontSize="14"/>
+
+                    </lvc:CartesianChart.AxisY>
+
+                </lvc:CartesianChart>
+
+            </Grid>
+
+
 
             <!-- Статистика по приоритетам -->
-            <Border Background="White"
-                    BorderThickness="1"
-                    BorderBrush="#EEEEEE"
-                    CornerRadius="4"
-                    Padding="20"
-                    Margin="0,0,0,20">
-                <StackPanel>
-                    <TextBlock Text="Статистика по приоритетам"
-                             FontSize="20"
-                             FontWeight="Medium"
-                             Margin="0,0,0,15"/>
 
-                    <ItemsControl x:Name="PriorityStatsList">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="#FAFAFA"
-                                        Margin="0,5"
-                                        CornerRadius="4"
-                                        Padding="15,10">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{Binding Priority}"
-                                                 VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding Count}"
-                                                 Grid.Column="1"
-                                                 FontWeight="Medium"
-                                                 FontSize="16"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
+            <TextBlock Text="Статистика по приоритетам"
 
-            <!-- Топ исполнителей -->
-            <Border Background="White"
-                    BorderThickness="1"
-                    BorderBrush="#EEEEEE"
-                    CornerRadius="4"
-                    Padding="20">
-                <StackPanel>
-                    <TextBlock Text="Топ исполнителей"
-                             FontSize="20"
-                             FontWeight="Medium"
-                             Margin="0,0,0,15"/>
+                     FontSize="20"
 
-                    <ItemsControl x:Name="TopExecutorsList">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="#FAFAFA"
-                                        Margin="0,5"
-                                        CornerRadius="4"
-                                        Padding="15,10">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{Binding Name}"
-                                                 VerticalAlignment="Center"/>
-                                        <StackPanel Grid.Column="1"
-                                                  Orientation="Horizontal">
-                                            <TextBlock Text="{Binding CompletedCount}"
-                                                     FontWeight="Medium"
-                                                     FontSize="16"/>
-                                            <TextBlock Text=" выполнено"
-                                                     Margin="5,0,0,0"
-                                                     Foreground="#757575"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
+                     FontWeight="Medium"
+
+                     Margin="0,0,0,20"/>
+
+
+
+            <lvc:CartesianChart Height="300" 
+
+                               x:Name="PriorityBarChart"
+
+                               Margin="0,0,0,40">
+
+                <lvc:CartesianChart.AxisX>
+
+                    <lvc:Axis Title="Приоритет" 
+
+                             FontSize="14"/>
+
+                </lvc:CartesianChart.AxisX>
+
+                <lvc:CartesianChart.AxisY>
+
+                    <lvc:Axis Title="Количество" 
+
+                             FontSize="14"/>
+
+                </lvc:CartesianChart.AxisY>
+
+            </lvc:CartesianChart>
+
+
+
+            <!-- Статистика по исполнителям -->
+
+            <TextBlock Text="Эффективность исполнителей"
+
+                     FontSize="20"
+
+                     FontWeight="Medium"
+
+                     Margin="0,0,0,20"/>
+
+
+
+            <lvc:CartesianChart Height="300" 
+
+                               x:Name="ExecutorsChart"
+
+                               Margin="0,0,0,40">
+
+                <lvc:CartesianChart.AxisX>
+
+                    <lvc:Axis Title="Исполнитель" 
+
+                             FontSize="14"/>
+
+                </lvc:CartesianChart.AxisX>
+
+                <lvc:CartesianChart.AxisY>
+
+                    <lvc:Axis Title="Выполнено заявок" 
+
+                             FontSize="14"/>
+
+                </lvc:CartesianChart.AxisY>
+
+            </lvc:CartesianChart>
+
+
+
+            <!-- График времени выполнения -->
+
+            <TextBlock Text="Среднее время выполнения по приоритетам"
+
+                     FontSize="20"
+
+                     FontWeight="Medium"
+
+                     Margin="0,0,0,20"/>
+
+
+
+            <lvc:CartesianChart Height="300" 
+
+                               x:Name="CompletionTimeChart"
+
+                               Margin="0,0,0,40">
+
+                <lvc:CartesianChart.AxisX>
+
+                    <lvc:Axis Title="Приоритет" 
+
+                             FontSize="14"/>
+
+                </lvc:CartesianChart.AxisX>
+
+                <lvc:CartesianChart.AxisY>
+
+                    <lvc:Axis Title="Среднее время (часы)" 
+
+                             FontSize="14"/>
+
+                </lvc:CartesianChart.AxisY>
+
+            </lvc:CartesianChart>
+
         </StackPanel>
+
     </ScrollViewer>
+
 </Page>
