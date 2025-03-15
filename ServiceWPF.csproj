@@ -64,11 +64,15 @@
     <Compile Include="AvailableRequestsPage.xaml.cs">
       <DependentUpon>AvailableRequestsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\ReadStatusToBackgroundConverter.cs" />
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="EditUserWindow.xaml.cs">
       <DependentUpon>EditUserWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="NotificationManager.cs" />
+    <Compile Include="NotificationsPage.xaml.cs">
+      <DependentUpon>NotificationsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RequestDetailsPage.xaml.cs">
       <DependentUpon>RequestDetailsPage.xaml</DependentUpon>
     </Compile>
@@ -128,6 +132,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="NotificationsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="RequestDetailsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -173,5 +180,6 @@
   <ItemGroup>
     <Resource Include="images\logo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

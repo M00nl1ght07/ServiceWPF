@@ -211,6 +211,29 @@ namespace ServiceWPF
                                     command.ExecuteNonQuery();
                                 }
 
+                                // Получаем автора заявки
+                                string requestAuthorLogin;
+                                using (var command = new SqlCommand(
+                                    @"SELECT U.Login 
+                                      FROM Requests R 
+                                      JOIN Users U ON R.CreatedByUserID = U.UserID 
+                                      WHERE R.RequestID = @RequestID", connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@RequestID", requestId);
+                                    requestAuthorLogin = (string)command.ExecuteScalar();
+                                }
+
+                                // Отправляем уведомление автору заявки
+                                if (requestAuthorLogin != currentUserLogin)
+                                {
+                                    NotificationManager.CreateNotification(
+                                        requestAuthorLogin,
+                                        "Статус заявки изменен",
+                                        $"Статус вашей заявки #{requestId} изменен на '{newStatus}'",
+                                        NotificationType.Info
+                                    );
+                                }
+
                                 transaction.Commit();
                                 NotificationManager.Show($"Статус заявки успешно изменен на '{newStatus}'", NotificationType.Success);
                                 LoadActiveRequests(); // Перезагружаем список

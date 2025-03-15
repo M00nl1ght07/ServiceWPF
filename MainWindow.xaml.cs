@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ServiceWPF;
+using System.Data.SqlClient;
 
 namespace ServiceWPF
 {
@@ -46,6 +47,8 @@ namespace ServiceWPF
                     CurrentPageTitle.Text = "Мои заявки";
                     break;
             }
+
+            UpdateUnreadNotificationsCount();
         }
 
         private void ConfigureForRole(string role)
@@ -191,6 +194,46 @@ namespace ServiceWPF
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        public void UpdateUnreadNotificationsCount()
+        {
+            try
+            {
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+                    var query = @"SELECT COUNT(*)
+                                 FROM Notifications N
+                                 JOIN Users U ON N.UserID = U.UserID
+                                 WHERE U.Login = @Login AND N.IsRead = 0";
+
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Login", CurrentUserLogin);
+                        var count = (int)command.ExecuteScalar();
+                        
+                        UnreadNotificationsCount.Text = count.ToString();
+                        UnreadNotificationsCount.Visibility = count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при обновлении счетчика уведомлений: {ex.Message}", NotificationType.Error);
+            }
+        }
+
+        private void NotificationsButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new NotificationsPage());
+            CurrentPageTitle.Text = "Уведомления";
+            
+            // Снимаем выделение со всех пунктов меню
+            foreach (RadioButton button in MenuPanel.Children)
+            {
+                button.IsChecked = false;
+            }
         }
     }
 }

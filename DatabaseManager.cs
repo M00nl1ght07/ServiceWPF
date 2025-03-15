@@ -10,7 +10,7 @@ namespace ServiceWPF
             "Server=95.31.128.97,1433;" +
             "Database=ServiceDesk;" +
             "User Id=admin;" +
-            "Password=winServer=;" +
+            "Password=winServer==;" +
             "TrustServerCertificate=True;" +
             "Encrypt=True;";
 

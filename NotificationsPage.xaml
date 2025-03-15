@@ -1,0 +1,73 @@
+﻿<Page x:Class="ServiceWPF.NotificationsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="clr-namespace:ServiceWPF"
+      Title="Уведомления"
+      Background="White">
+
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок и кнопки -->
+        <Grid Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="История уведомлений"
+                     FontSize="24"
+                     FontWeight="Medium"/>
+
+            <Button Grid.Column="1"
+                    Content="Отметить все как прочитанные"
+                    Height="35"
+                    Padding="15,0"
+                    Click="MarkAllAsRead_Click"/>
+        </Grid>
+
+        <!-- Список уведомлений -->
+        <ListView x:Name="NotificationsList"
+                 Grid.Row="1"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 HorizontalContentAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="15"
+                            Background="{Binding IsRead, Converter={StaticResource ReadStatusToBackgroundConverter}}"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="#E0E0E0"
+                            CornerRadius="4"
+                            HorizontalAlignment="Stretch"
+                            Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="{Binding Title}"
+                                     FontWeight="Medium"
+                                     FontSize="16"/>
+
+                            <TextBlock Grid.Row="1"
+                                     Text="{Binding Message}"
+                                     Margin="0,5"
+                                     TextWrapping="Wrap"/>
+
+                            <TextBlock Grid.Row="2"
+                                     Text="{Binding CreatedDate}"
+                                     Foreground="#757575"
+                                     FontSize="12"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

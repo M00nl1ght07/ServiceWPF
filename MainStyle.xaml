@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:ServiceWPF.Converters">
 
     <!-- Цветовая схема -->
     <SolidColorBrush x:Key="PrimaryColor" Color="#2196F3"/>
@@ -366,4 +367,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <!-- Добавить в ResourceDictionary -->
+    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+    <converters:ReadStatusToBackgroundConverter x:Key="ReadStatusToBackgroundConverter"/>
 </ResourceDictionary>

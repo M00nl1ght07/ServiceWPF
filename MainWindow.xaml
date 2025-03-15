@@ -68,11 +68,26 @@
                             Click="LogoutButton_Click"/>
                 </StackPanel>
 
-                <!-- Кнопка закрытия -->
-                <Button Grid.Column="3"
-                        Style="{StaticResource CloseButtonStyle}"
-                        Margin="20,0"
-                        Click="CloseButton_Click"/>
+                <!-- Кнопки уведомлений и закрытия -->
+                <StackPanel Grid.Column="3" 
+                            Orientation="Horizontal">
+                    <Button x:Name="NotificationsButton"
+                            Style="{StaticResource TransparentButton}"
+                            Click="NotificationsButton_Click"
+                            Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🔔" FontSize="16"/>
+                            <TextBlock x:Name="UnreadNotificationsCount"
+                                      Text="0"
+                                      Margin="5,0,0,0"
+                                      Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Style="{StaticResource CloseButtonStyle}"
+                            Margin="10,0,20,0"
+                            Click="CloseButton_Click"/>
+                </StackPanel>
             </Grid>
 
             <!-- Основной контент -->

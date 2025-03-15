@@ -4,6 +4,7 @@ using System.Windows;
 using System;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using System.Data.SqlClient;
 
 namespace ServiceWPF
 {
@@ -84,6 +85,34 @@ namespace ServiceWPF
                     return new SolidColorBrush(Color.FromRgb(244, 67, 54));
                 default:
                     return new SolidColorBrush(Color.FromRgb(33, 150, 243));
+            }
+        }
+
+        public static void CreateNotification(string userLogin, string title, string message, NotificationType type)
+        {
+            try
+            {
+                using (var connection = DatabaseManager.GetConnection())
+                {
+                    connection.Open();
+                    var query = @"INSERT INTO Notifications (UserID, Title, Message, Type)
+                                 SELECT U.UserID, @Title, @Message, @Type
+                                 FROM Users U
+                                 WHERE U.Login = @Login";
+
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Login", userLogin);
+                        command.Parameters.AddWithValue("@Title", title);
+                        command.Parameters.AddWithValue("@Message", message);
+                        command.Parameters.AddWithValue("@Type", type.ToString());
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Show($"Ошибка при создании уведомления: {ex.Message}", NotificationType.Error);
             }
         }
     }

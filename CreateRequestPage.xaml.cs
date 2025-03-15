@@ -94,10 +94,18 @@ namespace ServiceWPF
                             // Подтверждаем транзакцию
                             transaction.Commit();
 
+                            var requestTitle = TitleTextBox.Text;
                             NotificationManager.Show("Заявка успешно создана!", NotificationType.Success);
                             TitleTextBox.Clear();
                             DescriptionTextBox.Clear();
                             PriorityComboBox.SelectedIndex = 0;
+
+                            NotificationManager.CreateNotification(
+                                currentUserLogin,
+                                "Новая заявка создана",
+                                $"Ваша заявка '{requestTitle}' успешно создана",
+                                NotificationType.Success
+                            );
                         }
                         catch (Exception)
                         {
