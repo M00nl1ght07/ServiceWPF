@@ -676,16 +676,21 @@ namespace ServiceWPF
                                     command.ExecuteNonQuery();
                                 }
 
-                                // Получаем автора заявки
-                                string requestAuthorLogin;
+                                // Получаем автора заявки и заголовок
+                                string requestAuthorLogin, requestTitle;
                                 using (var command = new SqlCommand(
-                                    @"SELECT U.Login 
+                                    @"SELECT U.Login, R.Title
                                       FROM Requests R 
                                       JOIN Users U ON R.CreatedByUserID = U.UserID 
                                       WHERE R.RequestID = @RequestID", connection, transaction))
                                 {
                                     command.Parameters.AddWithValue("@RequestID", request.RequestID);
-                                    requestAuthorLogin = (string)command.ExecuteScalar();
+                                    using (var reader = command.ExecuteReader())
+                                    {
+                                        reader.Read();
+                                        requestAuthorLogin = reader.GetString(0);
+                                        requestTitle = reader.GetString(1);
+                                    }
                                 }
 
                                 // Получаем исполнителя заявки (если есть)
@@ -727,7 +732,7 @@ namespace ServiceWPF
                                     NotificationManager.CreateNotification(
                                         requestAuthorLogin,
                                         "Заявка отменена",
-                                        $"Ваша заявка #{request.RequestID} была отменена администратором",
+                                        $"Ваша заявка '{requestTitle}' была отменена администратором",
                                         NotificationType.Warning
                                     );
                                 }
@@ -738,7 +743,7 @@ namespace ServiceWPF
                                     NotificationManager.CreateNotification(
                                         executorLogin,
                                         "Заявка отменена",
-                                        $"Заявка #{request.RequestID} была отменена администратором",
+                                        $"Заявка '{requestTitle}' была отменена администратором",
                                         NotificationType.Warning
                                     );
                                 }
@@ -749,7 +754,7 @@ namespace ServiceWPF
                                     NotificationManager.CreateNotification(
                                         adminLogin,
                                         "Заявка отменена администратором",
-                                        $"Заявка #{request.RequestID} была отменена администратором {currentUserLogin}",
+                                        $"Заявка '{requestTitle}' была отменена администратором {currentUserLogin}",
                                         NotificationType.Info
                                     );
                                 }

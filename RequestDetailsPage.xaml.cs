@@ -222,28 +222,21 @@ namespace ServiceWPF
                                 userId = (int)result;
                             }
 
-                            // Добавляем комментарий
-                            var query = @"INSERT INTO RequestComments (RequestID, UserID, Text, CreatedDate)
-                                         VALUES (@RequestID, @UserID, @Text, GETDATE())";
-
-                            using (var command = new SqlCommand(query, connection, transaction))
-                            {
-                                command.Parameters.AddWithValue("@RequestID", _requestId);
-                                command.Parameters.AddWithValue("@UserID", userId);
-                                command.Parameters.AddWithValue("@Text", commentText);
-                                command.ExecuteNonQuery();
-                            }
-
-                            // Получаем автора заявки для уведомления
-                            string requestAuthorLogin;
+                            // Получаем автора заявки и заголовок
+                            string requestAuthorLogin, requestTitle;
                             using (var command = new SqlCommand(
-                                @"SELECT U.Login 
+                                @"SELECT U.Login, R.Title
                                   FROM Requests R 
                                   JOIN Users U ON R.CreatedByUserID = U.UserID 
                                   WHERE R.RequestID = @RequestID", connection, transaction))
                             {
                                 command.Parameters.AddWithValue("@RequestID", _requestId);
-                                requestAuthorLogin = (string)command.ExecuteScalar();
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    reader.Read();
+                                    requestAuthorLogin = reader.GetString(0);
+                                    requestTitle = reader.GetString(1);
+                                }
                             }
 
                             // Получаем исполнителя заявки для уведомления
@@ -264,7 +257,7 @@ namespace ServiceWPF
                                 NotificationManager.CreateNotification(
                                     requestAuthorLogin,
                                     "Новый комментарий к заявке",
-                                    $"К вашей заявке #{_requestId} добавлен новый комментарий",
+                                    $"К вашей заявке '{requestTitle}' добавлен новый комментарий",
                                     NotificationType.Info
                                 );
                             }
@@ -274,7 +267,7 @@ namespace ServiceWPF
                                 NotificationManager.CreateNotification(
                                     executorLogin,
                                     "Новый комментарий к заявке",
-                                    $"К заявке #{_requestId} добавлен новый комментарий",
+                                    $"К заявке '{requestTitle}' добавлен новый комментарий",
                                     NotificationType.Info
                                 );
                             }
