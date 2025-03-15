@@ -40,7 +40,7 @@ namespace ServiceWPF
                     var query = @"SELECT R.Title, R.Description, 
                                 FORMAT(R.CreatedDate, 'dd.MM.yyyy HH:mm') as CreatedDate,
                                 S.Name as Status, P.Name as Priority,
-                                CONCAT(U.LastName, ' ', U.FirstName, ' ', ISNULL(U.MiddleName, '')) as CreatedBy,
+                                U.Login as CreatedByLogin,
                                 CONCAT(E.LastName, ' ', E.FirstName, ' ', ISNULL(E.MiddleName, '')) as Executor,
                                 FORMAT(R.CompletionDate, 'dd.MM.yyyy HH:mm') as CompletionDate,
                                 FORMAT(R.LastModifiedDate, 'dd.MM.yyyy HH:mm') as LastModifiedDate
@@ -77,6 +77,37 @@ namespace ServiceWPF
 
                     // После загрузки основных деталей добавим загрузку комментариев
                     LoadComments();
+
+                    // Проверяем, может ли пользователь оставить отзыв
+                    var currentUserLogin = "";
+                    if (Application.Current.MainWindow is MainWindow mainWindow)
+                    {
+                        currentUserLogin = mainWindow.CurrentUserLogin;
+                    }
+
+                    var checkReviewQuery = @"SELECT COUNT(*)
+                                           FROM Reviews R
+                                           JOIN Users U ON R.UserID = U.UserID
+                                           WHERE R.RequestID = @RequestID 
+                                           AND U.Login = @UserLogin";
+
+                    using (var command = new SqlCommand(checkReviewQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@RequestID", _requestId);
+                        command.Parameters.AddWithValue("@UserLogin", currentUserLogin);
+                        var reviewExists = (int)command.ExecuteScalar() > 0;
+
+                        // Показываем кнопку только если:
+                        // 1. Заявка завершена
+                        // 2. Текущий пользователь создал заявку (проверяем по логину)
+                        // 3. Отзыв еще не оставлен
+                        LeaveReviewButton.Visibility = 
+                            StatusTextBlock.Text == "Завершена" && 
+                            CreatedByTextBlock.Text == currentUserLogin &&
+                            !reviewExists
+                                ? Visibility.Visible 
+                                : Visibility.Collapsed;
+                    }
                 }
             }
             catch (Exception ex)
@@ -301,6 +332,11 @@ namespace ServiceWPF
             {
                 NotificationManager.Show($"Ошибка при добавлении комментария: {ex.Message}", NotificationType.Error);
             }
+        }
+
+        private void LeaveReview_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService?.Navigate(new ReviewPage(_requestId));
         }
     }
 }

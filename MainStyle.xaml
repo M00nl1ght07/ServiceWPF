@@ -361,4 +361,33 @@
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
     <converters:ReadStatusToBackgroundConverter x:Key="ReadStatusToBackgroundConverter"/>
+    <converters:StarFilledConverter x:Key="StarFilledConverter"/>
+
+    <!-- Добавьте в ResourceDictionary -->
+    <Style x:Key="RatingButtonStyle" TargetType="RadioButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <TextBlock Text="★"
+                             FontSize="24"
+                             Cursor="Hand">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#BDBDBD"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=RadioButton}}" Value="True">
+                                        <Setter Property="Foreground" Value="#FFC107"/>
+                                    </DataTrigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="#FFD54F"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Margin" Value="5,0"/>
+    </Style>
 </ResourceDictionary>

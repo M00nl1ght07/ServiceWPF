@@ -223,7 +223,10 @@
     <Compile Include="AvailableRequestsPage.xaml.cs">
       <DependentUpon>AvailableRequestsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\AdminViewConverter.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\ReadStatusToBackgroundConverter.cs" />
+    <Compile Include="Converters\StarFilledConverter.cs" />
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="EditUserWindow.xaml.cs">
       <DependentUpon>EditUserWindow.xaml</DependentUpon>
@@ -234,6 +237,12 @@
     </Compile>
     <Compile Include="RequestDetailsPage.xaml.cs">
       <DependentUpon>RequestDetailsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ReviewPage.xaml.cs">
+      <DependentUpon>ReviewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ReviewsPage.xaml.cs">
+      <DependentUpon>ReviewsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="StatisticsPage.xaml.cs">
       <DependentUpon>StatisticsPage.xaml</DependentUpon>
@@ -295,6 +304,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="RequestDetailsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ReviewPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ReviewsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

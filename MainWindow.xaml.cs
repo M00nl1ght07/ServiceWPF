@@ -106,6 +106,11 @@ namespace ServiceWPF
                 Content = "Мои заявки в работе",
                 Style = FindResource("MenuButtonStyle") as Style
             });
+            MenuPanel.Children.Add(new RadioButton 
+            { 
+                Content = "Мои отзывы",
+                Style = FindResource("MenuButtonStyle") as Style
+            });
 
             // Добавляем обработчик событий для новых кнопок
             foreach (RadioButton button in MenuPanel.Children)
@@ -174,6 +179,23 @@ namespace ServiceWPF
                         break;
                     case "Статистика":
                         MainFrame.Navigate(new StatisticsPage());
+                        break;
+                    case "Мои отзывы":
+                        // Получаем ID текущего пользователя
+                        using (var connection = DatabaseManager.GetConnection())
+                        {
+                            connection.Open();
+                            var query = "SELECT UserID FROM Users WHERE Login = @Login";
+                            using (var command = new SqlCommand(query, connection))
+                            {
+                                command.Parameters.AddWithValue("@Login", CurrentUserLogin);
+                                var executorId = (int)command.ExecuteScalar();
+                                MainFrame.Navigate(new ReviewsPage(executorId));
+                            }
+                        }
+                        break;
+                    case "Все отзывы":
+                        MainFrame.Navigate(new ReviewsPage());
                         break;
                 }
             }
