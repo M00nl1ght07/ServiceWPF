@@ -19,6 +19,8 @@ using ClosedXML.Excel;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace ServiceWPF
 {
@@ -450,6 +452,284 @@ namespace ServiceWPF
             catch (Exception ex)
             {
                 NotificationManager.Show($"Ошибка при экспорте: {ex.Message}", NotificationType.Error);
+            }
+        }
+
+        private void ExportToHtml_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var html = new StringBuilder();
+                
+                // Добавляем HTML заголовок с необходимыми стилями и скриптами
+                html.Append(@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Статистика заявок</title>
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+    <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+    <style>
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .chart-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class='bg-light'>
+    <div class='container py-4'>");
+
+                // Добавляем заголовок
+                html.Append("<h1 class='mb-4'>Статистика заявок</h1>");
+
+                // Добавляем карточки с общей статистикой
+                html.Append(@"
+<div class='row mb-4'>
+    <div class='col-md-3'>
+        <div class='stat-card bg-primary bg-opacity-10'>
+            <div>Всего заявок</div>
+            <div class='stat-value'>" + TotalRequestsCount.Text + @"</div>
+        </div>
+    </div>
+    <div class='col-md-3'>
+        <div class='stat-card bg-success bg-opacity-10'>
+            <div>Среднее время</div>
+            <div class='stat-value'>" + AverageCompletionTime.Text + @"</div>
+        </div>
+    </div>
+    <div class='col-md-3'>
+        <div class='stat-card bg-warning bg-opacity-10'>
+            <div>Заявок в работе</div>
+            <div class='stat-value'>" + ActiveRequestsCount.Text + @"</div>
+        </div>
+    </div>
+    <div class='col-md-3'>
+        <div class='stat-card bg-info bg-opacity-10'>
+            <div>Завершено за неделю</div>
+            <div class='stat-value'>" + CompletedThisWeek.Text + @"</div>
+        </div>
+    </div>
+</div>");
+
+                // Добавляем графики
+                html.Append(@"
+<div class='row'>
+    <div class='col-md-6'>
+        <div class='chart-container'>
+            <h4>Статистика по статусам</h4>
+            <canvas id='statusPieChart'></canvas>
+        </div>
+    </div>
+    <div class='col-md-6'>
+        <div class='chart-container'>
+            <h4>Статистика по статусам</h4>
+            <canvas id='statusBarChart'></canvas>
+        </div>
+    </div>
+</div>
+<div class='row'>
+    <div class='col-md-12'>
+        <div class='chart-container'>
+            <h4>Статистика по исполнителям</h4>
+            <canvas id='executorsChart'></canvas>
+        </div>
+    </div>
+</div>");
+
+                // Добавляем данные для графиков
+                var statusSeries = StatusBarChart.Series[0] as ColumnSeries;
+                var statusLabels = StatusBarChart.AxisX[0].Labels;
+                var statusValues = new List<int>();
+                foreach (var value in statusSeries.Values)
+                {
+                    statusValues.Add(Convert.ToInt32(value));
+                }
+                var statusData = string.Join(",", statusValues);
+
+                var executorSeries = ExecutorsChart.Series[0] as ColumnSeries;
+                var executorLabels = ExecutorsChart.AxisX[0].Labels;
+                var executorValues = new List<int>();
+                foreach (var value in executorSeries.Values)
+                {
+                    executorValues.Add(Convert.ToInt32(value));
+                }
+                var executorData = string.Join(",", executorValues);
+
+                // Добавляем новые графики
+                html.Append(@"
+<div class='row'>
+    <div class='col-md-6'>
+        <div class='chart-container'>
+            <h4>Статистика по приоритетам</h4>
+            <canvas id='priorityChart'></canvas>
+        </div>
+    </div>
+    <div class='col-md-6'>
+        <div class='chart-container'>
+            <h4>Среднее время выполнения по приоритетам</h4>
+            <canvas id='completionTimeChart'></canvas>
+        </div>
+    </div>
+</div>");
+
+                // Добавьте получение данных для новых графиков перед скриптами:
+                var prioritySeries = PriorityBarChart.Series[0] as ColumnSeries;
+                var priorityLabels = PriorityBarChart.AxisX[0].Labels;
+                var priorityValues = new List<int>();
+                foreach (var value in prioritySeries.Values)
+                {
+                    priorityValues.Add(Convert.ToInt32(value));
+                }
+                var priorityData = string.Join(",", priorityValues);
+
+                var completionTimeSeries = CompletionTimeChart.Series[0] as LineSeries;
+                var completionTimeLabels = CompletionTimeChart.AxisX[0].Labels;
+                var completionTimeValues = new List<double>();
+                foreach (var value in completionTimeSeries.Values)
+                {
+                    completionTimeValues.Add(Convert.ToDouble(value));
+                }
+                var completionTimeData = string.Join(",", completionTimeValues);
+
+                // Добавляем скрипты инициализации графиков
+                html.Append(@"
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Круговая диаграмма статусов
+    new Chart(document.getElementById('statusPieChart'), {
+        type: 'pie',
+        data: {
+            labels: " + JsonConvert.SerializeObject(statusLabels.ToList()) + @",
+            datasets: [{
+                data: [" + statusData + @"],
+                backgroundColor: ['#2196F3', '#4CAF50', '#FFC107', '#F44336']
+            }]
+        }
+    });
+
+    // Столбчатая диаграмма статусов
+    new Chart(document.getElementById('statusBarChart'), {
+        type: 'bar',
+        data: {
+            labels: " + JsonConvert.SerializeObject(statusLabels.ToList()) + @",
+            datasets: [{
+                label: 'Количество заявок',
+                data: [" + statusData + @"],
+                backgroundColor: '#2196F3'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // График исполнителей
+    new Chart(document.getElementById('executorsChart'), {
+        type: 'bar',
+        data: {
+            labels: " + JsonConvert.SerializeObject(executorLabels.ToList()) + @",
+            datasets: [{
+                label: 'Выполнено заявок',
+                data: [" + executorData + @"],
+                backgroundColor: '#2196F3'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // График приоритетов
+    new Chart(document.getElementById('priorityChart'), {
+        type: 'bar',
+        data: {
+            labels: " + JsonConvert.SerializeObject(priorityLabels.ToList()) + @",
+            datasets: [{
+                label: 'Количество заявок',
+                data: [" + priorityData + @"],
+                backgroundColor: '#4CAF50'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // График времени выполнения
+    new Chart(document.getElementById('completionTimeChart'), {
+        type: 'line',
+        data: {
+            labels: " + JsonConvert.SerializeObject(completionTimeLabels.ToList()) + @",
+            datasets: [{
+                label: 'Среднее время (часы)',
+                data: [" + completionTimeData + @"],
+                borderColor: '#2196F3',
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                fill: true,
+                tension: 0
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>");
+
+                // Сохраняем файл
+                var saveDialog = new SaveFileDialog
+                {
+                    Filter = "HTML Files|*.html",
+                    DefaultExt = "html",
+                    FileName = $"Статистика_{DateTime.Now:yyyy-MM-dd}"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    File.WriteAllText(saveDialog.FileName, html.ToString(), Encoding.UTF8);
+                    NotificationManager.Show("Статистика успешно экспортирована в HTML", NotificationType.Success);
+                    
+                    // Открываем файл в браузере
+                    Process.Start(new ProcessStartInfo(saveDialog.FileName) { UseShellExecute = true });
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при экспорте в HTML: {ex.Message}", NotificationType.Error);
             }
         }
     }

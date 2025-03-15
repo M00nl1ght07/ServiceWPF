@@ -26,13 +26,22 @@
                          FontSize="24"
                          FontWeight="Medium"/>
                          
-                <Button Grid.Column="1"
-                        Content="Экспорт в Excel"
-                        Click="ExportToExcel_Click"
-                        Padding="15,8"
-                        Background="#2196F3"
-                        Foreground="White"
-                        BorderThickness="0"/>
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal">
+                    <Button Content="Excel"
+                            Click="ExportToExcel_Click"
+                            Padding="15,8"
+                            Margin="0,0,10,0"
+                            Background="#2196F3"
+                            Foreground="White"
+                            BorderThickness="0"/>
+                    <Button Content="HTML"
+                            Click="ExportToHtml_Click"
+                            Padding="15,8"
+                            Background="#4CAF50"
+                            Foreground="White"
+                            BorderThickness="0"/>
+                </StackPanel>
             </Grid>
 
 
