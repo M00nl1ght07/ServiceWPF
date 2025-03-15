@@ -15,6 +15,10 @@ using System.Windows.Shapes;
 using System.Data.SqlClient;
 using LiveCharts;
 using LiveCharts.Wpf;
+using ClosedXML.Excel;
+using Microsoft.Win32;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace ServiceWPF
 {
@@ -270,6 +274,183 @@ namespace ServiceWPF
             };
             CompletionTimeChart.Series = seriesCollection;
             CompletionTimeChart.AxisX[0].Labels = completionTimeData.Keys.ToList();
+        }
+
+        // Добавьте новый метод для сохранения графика как изображения
+        private MemoryStream ChartToImage(FrameworkElement chart)
+        {
+            // Создаем контейнер для графика
+            var container = new Grid();
+            container.Width = 800;
+            container.Height = 600;
+            container.Background = Brushes.White;
+
+            // Создаем визуальную копию графика
+            var visual = new VisualBrush(chart);
+            var rectangle = new Rectangle
+            {
+                Width = 800,
+                Height = 600,
+                Fill = visual
+            };
+
+            container.Children.Add(rectangle);
+
+            // Рендерим в окне нужного размера
+            container.Measure(new Size(800, 600));
+            container.Arrange(new Rect(0, 0, 800, 600));
+
+            // Создаем RenderTargetBitmap
+            var renderBitmap = new RenderTargetBitmap(
+                800, 600, 96, 96, PixelFormats.Pbgra32);
+            renderBitmap.Render(container);
+
+            // Сохраняем в поток
+            var stream = new MemoryStream();
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+            encoder.Save(stream);
+            stream.Position = 0;
+            
+            return stream;
+        }
+
+        private void ExportToExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                using (var workbook = new XLWorkbook())
+                {
+                    // Лист с общей статистикой
+                    var worksheetGeneral = workbook.Worksheets.Add("Общая статистика");
+                    
+                    // Заголовки
+                    worksheetGeneral.Cell("A1").Value = "Показатель";
+                    worksheetGeneral.Cell("B1").Value = "Значение";
+                    
+                    // Данные
+                    worksheetGeneral.Cell("A2").Value = "Всего заявок";
+                    worksheetGeneral.Cell("B2").Value = int.Parse(TotalRequestsCount.Text);
+                    
+                    worksheetGeneral.Cell("A3").Value = "Среднее время";
+                    worksheetGeneral.Cell("B3").Value = AverageCompletionTime.Text;
+                    
+                    worksheetGeneral.Cell("A4").Value = "Заявок в работе";
+                    worksheetGeneral.Cell("B4").Value = int.Parse(ActiveRequestsCount.Text);
+                    
+                    worksheetGeneral.Cell("A5").Value = "Завершено за неделю";
+                    worksheetGeneral.Cell("B5").Value = int.Parse(CompletedThisWeek.Text);
+
+                    // Лист со статистикой по статусам
+                    var worksheetStatus = workbook.Worksheets.Add("Статистика по статусам");
+                    worksheetStatus.Cell("A1").Value = "Статус";
+                    worksheetStatus.Cell("B1").Value = "Количество";
+
+                    var statusSeries = StatusBarChart.Series[0] as ColumnSeries;
+                    var statusLabels = StatusBarChart.AxisX[0].Labels;
+                    for (int i = 0; i < statusLabels.Count; i++)
+                    {
+                        worksheetStatus.Cell(i + 2, 1).Value = statusLabels[i];
+                        worksheetStatus.Cell(i + 2, 2).Value = (int)statusSeries.Values[i];
+                    }
+
+                    // Лист со статистикой по исполнителям
+                    var worksheetExecutors = workbook.Worksheets.Add("Исполнители");
+                    worksheetExecutors.Cell("A1").Value = "Исполнитель";
+                    worksheetExecutors.Cell("B1").Value = "Выполнено заявок";
+
+                    var executorSeries = ExecutorsChart.Series[0] as ColumnSeries;
+                    var executorLabels = ExecutorsChart.AxisX[0].Labels;
+                    for (int i = 0; i < executorLabels.Count; i++)
+                    {
+                        worksheetExecutors.Cell(i + 2, 1).Value = executorLabels[i];
+                        worksheetExecutors.Cell(i + 2, 2).Value = (int)executorSeries.Values[i];
+                    }
+
+                    // Добавляем лист с графиками
+                    var worksheetCharts = workbook.Worksheets.Add("Графики");
+                    
+                    // Сохраняем графики как изображения
+                    using (var pieChartStream = ChartToImage(StatusPieChart))
+                    using (var barChartStream = ChartToImage(StatusBarChart))
+                    using (var priorityChartStream = ChartToImage(PriorityBarChart))
+                    using (var executorsChartStream = ChartToImage(ExecutorsChart))
+                    using (var completionTimeChartStream = ChartToImage(CompletionTimeChart))
+                    {
+                        // Статистика по статусам (круговая)
+                        worksheetCharts.Cell("A1").Value = "Статистика по статусам (круговая диаграмма)";
+                        worksheetCharts.Cell("A1").Style.Font.Bold = true;
+                        var pieImage = worksheetCharts.AddPicture(pieChartStream)
+                            .MoveTo(worksheetCharts.Cell("A2"))
+                            .WithSize(800, 400);
+
+                        // Статистика по статусам (столбчатая)
+                        worksheetCharts.Cell("A27").Value = "Статистика по статусам (столбчатая диаграмма)";
+                        worksheetCharts.Cell("A27").Style.Font.Bold = true;
+                        var barImage = worksheetCharts.AddPicture(barChartStream)
+                            .MoveTo(worksheetCharts.Cell("A28"))
+                            .WithSize(800, 400);
+
+                        // Статистика по приоритетам
+                        worksheetCharts.Cell("A53").Value = "Статистика по приоритетам";
+                        worksheetCharts.Cell("A53").Style.Font.Bold = true;
+                        var priorityImage = worksheetCharts.AddPicture(priorityChartStream)
+                            .MoveTo(worksheetCharts.Cell("A54"))
+                            .WithSize(800, 400);
+
+                        // Статистика по исполнителям
+                        worksheetCharts.Cell("A79").Value = "Статистика по исполнителям";
+                        worksheetCharts.Cell("A79").Style.Font.Bold = true;
+                        var executorsImage = worksheetCharts.AddPicture(executorsChartStream)
+                            .MoveTo(worksheetCharts.Cell("A80"))
+                            .WithSize(800, 400);
+
+                        // Среднее время выполнения
+                        worksheetCharts.Cell("A105").Value = "Среднее время выполнения по приоритетам";
+                        worksheetCharts.Cell("A105").Style.Font.Bold = true;
+                        var completionTimeImage = worksheetCharts.AddPicture(completionTimeChartStream)
+                            .MoveTo(worksheetCharts.Cell("A106"))
+                            .WithSize(800, 400);
+
+                        // Настраиваем высоту строк для заголовков
+                        worksheetCharts.Row(1).Height = 30;   // Заголовок 1
+                        worksheetCharts.Row(27).Height = 30;  // Заголовок 2
+                        worksheetCharts.Row(53).Height = 30;  // Заголовок 3
+                        worksheetCharts.Row(79).Height = 30;  // Заголовок 4
+                        worksheetCharts.Row(105).Height = 30; // Заголовок 5
+                    }
+
+                    // Форматирование
+                    foreach (var worksheet in workbook.Worksheets)
+                    {
+                        if (worksheet.Name != "Графики") // Пропускаем лист с графиками
+                        {
+                            var usedRange = worksheet.RangeUsed();
+                            usedRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                            usedRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                        }
+                        worksheet.Columns().AdjustToContents();
+                    }
+
+                    // Сохранение файла
+                    var saveDialog = new SaveFileDialog
+                    {
+                        Filter = "Excel Files|*.xlsx",
+                        DefaultExt = "xlsx",
+                        FileName = $"Статистика_{DateTime.Now:yyyy-MM-dd}"
+                    };
+
+                    if (saveDialog.ShowDialog() == true)
+                    {
+                        workbook.SaveAs(saveDialog.FileName);
+                        NotificationManager.Show("Статистика успешно экспортирована", NotificationType.Success);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationManager.Show($"Ошибка при экспорте: {ex.Message}", NotificationType.Error);
+            }
         }
     }
 }

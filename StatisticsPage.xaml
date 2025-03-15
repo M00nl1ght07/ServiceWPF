@@ -16,13 +16,24 @@
 
         <StackPanel Margin="0,0,20,0">
 
-            <TextBlock Text="Общая статистика"
-
-                     FontSize="24"
-
-                     FontWeight="Medium"
-
-                     Margin="0,0,0,20"/>
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Text="Общая статистика"
+                         FontSize="24"
+                         FontWeight="Medium"/>
+                         
+                <Button Grid.Column="1"
+                        Content="Экспорт в Excel"
+                        Click="ExportToExcel_Click"
+                        Padding="15,8"
+                        Background="#2196F3"
+                        Foreground="White"
+                        BorderThickness="0"/>
+            </Grid>
 
 
 
