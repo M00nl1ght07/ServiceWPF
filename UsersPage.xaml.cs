@@ -160,6 +160,11 @@ namespace ServiceWPF
                 }
             }
         }
+
+        private void CreateUser_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService?.Navigate(new CreateUserPage());
+        }
     }
 
     public class UserInfo

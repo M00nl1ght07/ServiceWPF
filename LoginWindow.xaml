@@ -35,30 +35,54 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
+        <Style x:Key="TabRadioButtonStyle" TargetType="RadioButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="border" 
+                                Background="Transparent"
+                                BorderThickness="0,0,0,2"
+                                BorderBrush="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Margin="0,0,0,10"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2196F3"/>
+                                <Setter Property="Foreground" Value="#2196F3"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Foreground" Value="#757575"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
     </Window.Resources>
     
-    <Grid>
-        <!-- Основной контейнер -->
+    <Grid MouseDown="Grid_MouseDown">
         <Border Background="White" 
                 CornerRadius="10" 
-                BorderThickness="1" 
-                BorderBrush="#EEEEEE">
+                Margin="10">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-
-                <!-- Заголовок окна с кнопкой закрытия -->
-                <Grid Background="Transparent" MouseDown="Grid_MouseDown">
-                    <Button Grid.Column="2"
-                            Style="{StaticResource CloseButtonStyle}"
-                            Click="CloseButton_Click"
-                            VerticalAlignment="Center"
+                
+                <!-- Верхняя панель с кнопкой закрытия -->
+                <Grid>
+                    <Button Style="{StaticResource CloseButtonStyle}"
                             HorizontalAlignment="Right"
-                            Margin="0,0,20,0"/>
+                            Click="CloseButton_Click"/>
                 </Grid>
-
+                
                 <!-- ScrollViewer с основным контентом -->
                 <ScrollViewer Grid.Row="1" 
                              VerticalScrollBarVisibility="Auto" 
@@ -85,15 +109,9 @@
                             
                             <RadioButton x:Name="LoginTab" 
                                        Content="Вход" 
+                                       Style="{StaticResource TabRadioButtonStyle}"
                                        IsChecked="True"
-                                       Style="{StaticResource TabRadioButtonStyle}"
-                                       Checked="LoginTab_Checked"/>
-                            
-                            <RadioButton x:Name="RegisterTab" 
-                                       Grid.Column="1"
-                                       Content="Регистрация"
-                                       Style="{StaticResource TabRadioButtonStyle}"
-                                       Checked="RegisterTab_Checked"/>
+                                       Grid.ColumnSpan="2"/>
                         </Grid>
 
                         <!-- Содержимое для входа -->
@@ -166,7 +184,10 @@
                                 </Button.Resources>
                             </Button>
 
-                            <Button Content="Зарегистрироваться"
+                            <!-- Скрытая кнопка перехода к регистрации -->
+                            <Button x:Name="SwitchToRegisterButton"
+                                    Content="Нет аккаунта? Зарегистрироваться"
+                                    Visibility="Collapsed"
                                     Height="50"
                                     FontSize="16"
                                     FontWeight="Medium"
@@ -184,236 +205,7 @@
                                 </Button.Resources>
                             </Button>
                         </StackPanel>
-
-                        <!-- Содержимое для регистрации -->
-                        <StackPanel x:Name="RegisterContent" Visibility="Collapsed">
-                            <!-- Логин -->
-                            <Border BorderThickness="0,0,0,1" 
-                                    BorderBrush="#E0E0E0" 
-                                    Margin="0,0,0,20">
-                                <Grid>
-                                    <TextBox x:Name="RegisterUsernameTextBox"
-                                            FontSize="16"
-                                            BorderThickness="0"
-                                            Padding="5,10"
-                                            Background="Transparent"/>
-                                    <TextBlock IsHitTestVisible="False"
-                                             Text="Придумайте логин"
-                                             VerticalAlignment="Center"
-                                             Margin="5,0,0,0"
-                                             FontSize="16"
-                                             Foreground="#BDBDBD">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Text, ElementName=RegisterUsernameTextBox}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </Grid>
-                            </Border>
-
-                            <!-- Email -->
-                            <Border BorderThickness="0,0,0,1" 
-                                    BorderBrush="#E0E0E0" 
-                                    Margin="0,0,0,20">
-                                <Grid>
-                                    <TextBox x:Name="EmailTextBox"
-                                            FontSize="16"
-                                            BorderThickness="0"
-                                            Padding="5,10"
-                                            Background="Transparent"/>
-                                    <TextBlock IsHitTestVisible="False"
-                                             Text="Введите email"
-                                             VerticalAlignment="Center"
-                                             Margin="5,0,0,0"
-                                             FontSize="16"
-                                             Foreground="#BDBDBD">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Text, ElementName=EmailTextBox}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </Grid>
-                            </Border>
-
-                            <!-- Фамилия -->
-                            <Border BorderThickness="0,0,0,1" 
-                                    BorderBrush="#E0E0E0" 
-                                    Margin="0,0,0,20">
-                                <Grid>
-                                    <TextBox x:Name="LastNameTextBox"
-                                            FontSize="16"
-                                            BorderThickness="0"
-                                            Padding="5,10"
-                                            Background="Transparent"/>
-                                    <TextBlock IsHitTestVisible="False"
-                                             Text="Введите фамилию"
-                                             VerticalAlignment="Center"
-                                             Margin="5,0,0,0"
-                                             FontSize="16"
-                                             Foreground="#BDBDBD">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Text, ElementName=LastNameTextBox}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </Grid>
-                            </Border>
-
-                            <!-- Имя -->
-                            <Border BorderThickness="0,0,0,1" 
-                                    BorderBrush="#E0E0E0" 
-                                    Margin="0,0,0,20">
-                                <Grid>
-                                    <TextBox x:Name="FirstNameTextBox"
-                                            FontSize="16"
-                                            BorderThickness="0"
-                                            Padding="5,10"
-                                            Background="Transparent"/>
-                                    <TextBlock IsHitTestVisible="False"
-                                             Text="Введите имя"
-                                             VerticalAlignment="Center"
-                                             Margin="5,0,0,0"
-                                             FontSize="16"
-                                             Foreground="#BDBDBD">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Text, ElementName=FirstNameTextBox}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </Grid>
-                            </Border>
-
-                            <!-- Отчество -->
-                            <Border BorderThickness="0,0,0,1" 
-                                    BorderBrush="#E0E0E0" 
-                                    Margin="0,0,0,20">
-                                <Grid>
-                                    <TextBox x:Name="MiddleNameTextBox"
-                                            FontSize="16"
-                                            BorderThickness="0"
-                                            Padding="5,10"
-                                            Background="Transparent"/>
-                                    <TextBlock IsHitTestVisible="False"
-                                             Text="Введите отчество (необязательно)"
-                                             VerticalAlignment="Center"
-                                             Margin="5,0,0,0"
-                                             FontSize="16"
-                                             Foreground="#BDBDBD">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Text, ElementName=MiddleNameTextBox}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </Grid>
-                            </Border>
-
-                            <!-- Пароль -->
-                            <Border BorderThickness="0,0,0,1" 
-                                    BorderBrush="#E0E0E0" 
-                                    Margin="0,0,0,20">
-                                <Grid>
-                                    <PasswordBox x:Name="RegisterPasswordBox"
-                                               FontSize="16"
-                                               BorderThickness="0"
-                                               Padding="5,10"
-                                               Background="Transparent"/>
-                                    <TextBlock x:Name="RegisterPasswordHint"
-                                             IsHitTestVisible="False"
-                                             Text="Придумайте пароль"
-                                             VerticalAlignment="Center"
-                                             Margin="5,0,0,0"
-                                             FontSize="16"
-                                             Foreground="#BDBDBD"/>
-                                </Grid>
-                            </Border>
-
-                            <!-- Подтверждение пароля -->
-                            <Border BorderThickness="0,0,0,1" 
-                                    BorderBrush="#E0E0E0" 
-                                    Margin="0,0,0,30">
-                                <Grid>
-                                    <PasswordBox x:Name="ConfirmPasswordBox"
-                                               FontSize="16"
-                                               BorderThickness="0"
-                                               Padding="5,10"
-                                               Background="Transparent"/>
-                                    <TextBlock x:Name="ConfirmPasswordHint"
-                                             IsHitTestVisible="False"
-                                             Text="Подтвердите пароль"
-                                             VerticalAlignment="Center"
-                                             Margin="5,0,0,0"
-                                             FontSize="16"
-                                             Foreground="#BDBDBD"/>
-                                </Grid>
-                            </Border>
-
-                            <!-- Кнопки регистрации -->
-                            <Button Content="Зарегистрироваться"
-                                    Height="50"
-                                    FontSize="16"
-                                    FontWeight="Medium"
-                    Background="#2196F3"
-                    Foreground="White"
-                                    BorderThickness="0"
-                                    Click="RegisterButton_Click"
-                                    Margin="0,0,0,15"
-                                    Cursor="Hand">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="25"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
-
-                            <Button Content="Уже есть аккаунт? Войти"
-                                    Height="50"
-                                    FontSize="16"
-                                    FontWeight="Medium"
-                                    Background="Transparent"
-                                    Foreground="#2196F3"
-                                    BorderThickness="2"
-                                    BorderBrush="#2196F3"
-                                    Click="SwitchToLogin_Click"
-                                    Margin="0,0,0,20"
-                                    Cursor="Hand">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="25"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
-                        </StackPanel>
-        </StackPanel>
+                    </StackPanel>
                 </ScrollViewer>
             </Grid>
         </Border>

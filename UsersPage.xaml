@@ -42,6 +42,14 @@
                             TextChanged="SearchBox_TextChanged"/>
                 </Grid>
             </Border>
+            
+            <!-- Кнопка создания пользователя -->
+            <Button Grid.Column="1"
+                    Content="Создать пользователя"
+                    Height="35"
+                    Padding="15,0"
+                    Click="CreateUser_Click"
+                    Style="{StaticResource PrimaryButton}"/>
         </Grid>
 
         <!-- Список пользователей -->
